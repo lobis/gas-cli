@@ -5,16 +5,18 @@ project(gas_generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include(FetchContent)
+find_package(ROOT REQUIRED)
 
 # Garfield
 find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
 if (NOT Garfield_FOUND)
-    message(STATUS "Garfield not found. Building Garfield from source")
+    set(GARFIELD_HASH 0b769960696833d1f29f825d9e6a2295cfef6182)
+    message(STATUS "Garfield not found. Garfield will be built from source (hash ${GARFIELD_HASH})")
+    include(FetchContent)
     FetchContent_Declare(
             Garfield
             GIT_REPOSITORY https://gitlab.cern.ch/garfield/garfieldpp
-            GIT_TAG 0b769960696833d1f29f825d9e6a2295cfef6182
+            GIT_TAG ${GARFIELD_HASH}
     )
     set(WITH_EXAMPLES OFF) # Do not build Garfield with examples
     FetchContent_MakeAvailable(Garfield)

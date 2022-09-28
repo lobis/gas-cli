@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+
+jobs:
+  cmake:
+    name: Build with CMake
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/rootproject/root:6.26.06-ubuntu22.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: CMake configure
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: CMake build
+        run: |
+          cmake --build build
