@@ -5,6 +5,11 @@ project(gas_generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(LIBRARY_NAME ${PROJECT_NAME})
+set(EXECUTABLE_NAME ${PROJECT_NAME}-cli)
+
+add_library(${LIBRARY_NAME} SHARED)
+
 find_package(ROOT REQUIRED)
 
 # Garfield
@@ -25,9 +30,14 @@ else ()
     message(STATUS "Garfield found")
 endif ()
 
+target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
+target_sources(${LIBRARY_NAME} PRIVATE ${sources})
+target_link_libraries(${LIBRARY_NAME} PUBLIC Garfield::Garfield)
+
 add_executable(
-        ${PROJECT_NAME}
+        ${EXECUTABLE_NAME}
         main.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} Garfield::Garfield)
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME})
