@@ -17,8 +17,8 @@ jobs:
     steps:
       - name: dependencies
         run: |
-          apt update
-          apt install -y git
+          apt-get update
+          apt-get install -y git
       - uses: actions/checkout@v3
       - name: CMake configure
         run: |
