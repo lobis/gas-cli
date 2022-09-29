@@ -69,8 +69,24 @@ std::vector<T> linspace(T start, T end, size_t points) {
     return result;
 }
 
+template<typename T>
+std::vector<T> logspace(T start, T end, size_t points) {
+    std::vector<T> result = linspace(log10(start), log10(end), points);
+    std::transform(result.begin(), result.end(),
+                   result.begin(),
+                   [](double x) { return pow(10, x); });
+    return result;
+}
+
 void Gas::Generate() {
-    const auto electricField = linspace<double>(0, 300, 20);
+    // generate linear + log spaced vector
+    const auto electricFieldLinear = linspace<double>(0, 1000, 50);
+    const auto electricFieldLog = logspace<double>(1, 1000, 50);
+    vector<double> electricField(electricFieldLinear);
+    electricField.insert(electricField.end(), electricFieldLog.begin(), electricFieldLog.end());
+    sort(electricField.begin(), electricField.end());
+
+    // TODO: remove very close E field values
     gas->SetFieldGrid(electricField, {0.0}, {HalfPi});
 
     const int numCollisions = 10;
