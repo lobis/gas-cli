@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <nlohmann/json.hpp>
+
 using namespace std;
 using namespace Garfield;
 
@@ -124,4 +126,57 @@ double Gas::GetElectronAttachment(double electricField) const {
     double attachment;
     gas->ElectronAttachment(0, 0, -electricField, 0, 0, 0, attachment);
     return attachment;
+}
+
+std::vector<double> Gas::GetTableElectricField() const {
+    vector<double> electricField, magneticField, angle;
+    gas->GetFieldGrid(electricField, magneticField, angle);
+    // sort electric field in case it's not ordered
+    sort(electricField.begin(), electricField.end());
+    return electricField;
+}
+
+std::string Gas::GetGasPropertiesJson() const {
+    nlohmann::json j;
+
+    j["name"] = gas->GetName();
+    j["temperature"] = GetTemperature();
+    j["pressure"] = GetPressure();
+
+    const auto electricField = GetTableElectricField();
+    j["electric_field"] = electricField;
+
+    vector<double> electronDriftVelocity(electricField.size());
+    std::transform(electricField.begin(), electricField.end(),
+                   electronDriftVelocity.begin(),
+                   [this](double e) { return GetElectronDriftVelocity(e); });
+    j["electron_drift_velocity"] = electronDriftVelocity;
+
+    vector<double> electronTransversalDiffusion(electricField.size());
+    std::transform(electricField.begin(), electricField.end(),
+                   electronTransversalDiffusion.begin(),
+                   [this](double e) { return GetElectronTransversalDiffusion(e); });
+    j["electron_transversal_diffusion"] = electronTransversalDiffusion;
+
+    vector<double> electronLongitudinalDiffusion(electricField.size());
+    std::transform(electricField.begin(), electricField.end(),
+                   electronLongitudinalDiffusion.begin(),
+                   [this](double e) { return GetElectronLongitudinalDiffusion(e); });
+    j["electron_longitudinal_diffusion"] = electronLongitudinalDiffusion;
+
+    /*
+    vector<double> electronTownsend(electricField.size());
+    std::transform(electricField.begin(), electricField.end(),
+                   electronTownsend.begin(),
+                   [this](double e) { return GetElectronTownsend(e); });
+    j["electron_townsend"] = electronTownsend;
+
+    vector<double> electronAttachment(electricField.size());
+    std::transform(electricField.begin(), electricField.end(),
+                   electronAttachment.begin(),
+                   [this](double e) { return GetElectronAttachment(e); });
+    j["electron_attachment"] = electronAttachment;
+    */
+
+    return j.dump(4);
 }

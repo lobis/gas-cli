@@ -17,6 +17,7 @@ public:
 
     double GetTemperature() const;
     double GetPressure() const;
+    std::vector<double> GetTableElectricField() const;
 
     double GetElectronDriftVelocity(double electricField) const;
     std::pair<double, double> GetElectronDiffusion(double electricField) const;
@@ -30,5 +31,5 @@ public:
 
     void Generate();
     void Write(const std::string& filename) const;
-    std::string GetDriftTable() const;
+    std::string GetGasPropertiesJson() const;
 };
