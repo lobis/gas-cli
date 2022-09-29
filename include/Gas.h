@@ -17,11 +17,18 @@ public:
 
     double GetTemperature() const;
     double GetPressure() const;
-    double GetElectronVelocity(double electricField) const;
+
+    double GetElectronDriftVelocity(double electricField) const;
+    std::pair<double, double> GetElectronDiffusion(double electricField) const;
+    double GetElectronTransversalDiffusion(double electricField) const;
+    double GetElectronLongitudinalDiffusion(double electricField) const;
+    double GetElectronTownsend(double electricField) const;
+    double GetElectronAttachment(double electricField) const;
 
     void SetPressure(double pressureInBar);
     void SetTemperature(double temperatureInCelsius);
 
     void Generate();
     void Write(const std::string& filename) const;
+    std::string GetDriftTable() const;
 };

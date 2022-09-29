@@ -4,6 +4,7 @@
 
 #include "Gas.h"
 
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
@@ -93,8 +94,34 @@ void Gas::SetTemperature(double temperatureInCelsius) {
     gas->SetTemperature(temperatureInCelsius + ZeroCelsius);
 }
 
-double Gas::GetElectronVelocity(double electricField) const {
+double Gas::GetElectronDriftVelocity(double electricField) const {
     double vx, vy, vz;
     gas->ElectronVelocity(0, 0, -electricField, 0, 0, 0, vx, vy, vz);
     return vz;
+}
+
+pair<double, double> Gas::GetElectronDiffusion(double electricField) const {
+    double longitudinal, transversal;
+    gas->ElectronDiffusion(0, 0, -electricField, 0, 0, 0, longitudinal, transversal);
+    return {longitudinal, transversal};
+}
+
+double Gas::GetElectronTransversalDiffusion(double electricField) const {
+    return GetElectronDiffusion(electricField).second;
+}
+
+double Gas::GetElectronLongitudinalDiffusion(double electricField) const {
+    return GetElectronDiffusion(electricField).first;
+}
+
+double Gas::GetElectronTownsend(double electricField) const {
+    double townsend;
+    gas->ElectronTownsend(0, 0, -electricField, 0, 0, 0, townsend);
+    return townsend;
+}
+
+double Gas::GetElectronAttachment(double electricField) const {
+    double attachment;
+    gas->ElectronAttachment(0, 0, -electricField, 0, 0, 0, attachment);
+    return attachment;
 }
