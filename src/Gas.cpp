@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 
@@ -79,6 +81,19 @@ void Gas::Write(const string& filename) const {
     gas->WriteGasFile(filename);
 }
 
+std::string Gas::GetName() const {
+    return gas->GetName();
+}
+
+std::pair<std::vector<std::string>, std::vector<double>> Gas::GetComponents() const {
+    std::vector<std::string> names(gas->GetNumberOfComponents());
+    std::vector<double> fractions(gas->GetNumberOfComponents());
+    for (size_t i = 0; i < gas->GetNumberOfComponents(); i++) {
+        gas->GetComponent(i, names[i], fractions[i]);
+    }
+    return {names, fractions};
+}
+
 constexpr double torrToBar = 0.001333223684;
 double Gas::GetPressure() const {
     return gas->GetPressure() * torrToBar;
@@ -139,9 +154,13 @@ std::vector<double> Gas::GetTableElectricField() const {
 std::string Gas::GetGasPropertiesJson() const {
     nlohmann::json j;
 
-    j["name"] = gas->GetName();
+    j["name"] = GetName();
     j["temperature"] = GetTemperature();
     j["pressure"] = GetPressure();
+
+    const auto components = GetComponents();
+    j["components"]["labels"] = components.first;
+    j["components"]["fractions"] = components.second;
 
     const auto electricField = GetTableElectricField();
     j["electric_field"] = electricField;
