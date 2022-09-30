@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file");
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
-    generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
+    generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
     vector<string> generateGasComponentsString;
     generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
     double pressure = 1.0, temperature = 20.0;
@@ -96,6 +96,19 @@ int main(int argc, char** argv) {
             return 1;
         }
         sort(eField.begin(), eField.end());
+
+        if (gasFilenameOutput.empty()) {
+            string name = gas.GetName();
+            name += "-T" + tools::numberToCleanNumberString(temperature) + "C";
+            name += "-P" + tools::numberToCleanNumberString(pressure) + "bar";
+            name += "-nColl" + to_string(numberOfCollisions);
+            name += "-E" + tools::numberToCleanNumberString(eField.front()) + "t" + tools::numberToCleanNumberString(eField.back()) + "Vcm";
+            name += "-nE" + to_string(eField.size());
+            name += ".gas";
+            gasFilenameOutput = name;
+        }
+
+        cout << "gas file will be saved to '" << gasFilenameOutput << "'" << endl;
 
         gas.Generate(eField, numberOfCollisions, generateVerbose);
 

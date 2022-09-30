@@ -4,8 +4,9 @@
 
 #include "Gas.h"
 
+#include "Tools.h"
+
 #include <algorithm>
-#include <filesystem>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <regex>
@@ -87,9 +88,7 @@ std::string Gas::GetName() const {
     name += components.first[0];
     for (unsigned int i = 1; i < components.first.size(); i++) {
         string fractionString = to_string(components.second[i] * 100);
-        fractionString = std::regex_replace(fractionString, std::regex("\\."), "p");  // replace '.' by 'p'
-        fractionString = std::regex_replace(fractionString, std::regex("[0]+$"), ""); // remove trailing zeros
-        name += fractionString + components.first[i];
+        name += tools::cleanNumberString(fractionString) + components.first[i];
     }
     return name;
 }
