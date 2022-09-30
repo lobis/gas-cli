@@ -31,7 +31,7 @@ public:
     void SetPressure(double pressureInBar);
     void SetTemperature(double temperatureInCelsius);
 
-    void Generate(std::vector<double> electricFieldValues, unsigned int numberOfCollisions = 10);
+    void Generate(std::vector<double> electricFieldValues, unsigned int numberOfCollisions = 10, bool verbose = false);
     void Write(const std::string& filename) const;
 
     std::string GetGasPropertiesJson() const;

@@ -66,13 +66,13 @@ Gas::Gas(const vector<string>& _components,
     gas = make_unique<MediumMagboltz>(components[0], fractions[0], components[1], fractions[1], components[2], fractions[2], components[3], fractions[3], components[4], fractions[4], components[5], fractions[5]);
 }
 
-void Gas::Generate(vector<double> electricFieldValues, unsigned int numberOfCollisions) {
+void Gas::Generate(vector<double> electricFieldValues, unsigned int numberOfCollisions, bool verbose) {
     sort(electricFieldValues.begin(), electricFieldValues.end());
 
     // TODO: remove very close E field values
     gas->SetFieldGrid(electricFieldValues, {0.0}, {HalfPi});
 
-    gas->GenerateGasTable(int(numberOfCollisions));
+    gas->GenerateGasTable(int(numberOfCollisions), verbose);
 }
 
 void Gas::Write(const string& filename) const {

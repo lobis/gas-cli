@@ -32,6 +32,8 @@ int main(int argc, char** argv) {
     generate->add_option("--temperature", temperature, "Gas temperature in Celsius");
     unsigned int numberOfCollisions = 10;
     generate->add_option("--collisions", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
+    bool generateVerbose = false;
+    generate->add_flag("--verbose", generateVerbose, "Garfield verbosity");
     vector<double> generateGasElectricFieldValues;
     generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
     vector<double> generateGasElectricFieldLinearOptions;
@@ -50,7 +52,7 @@ int main(int argc, char** argv) {
 
     if (!gasFilenameOutput.empty()) {
         // absolute path
-        gasFilenameOutput = std::filesystem::canonical(gasFilenameOutput);
+        gasFilenameOutput = std::filesystem::weakly_canonical(gasFilenameOutput);
     }
 
     const auto subcommand = app.get_subcommands().back();
@@ -95,7 +97,7 @@ int main(int argc, char** argv) {
         }
         sort(eField.begin(), eField.end());
 
-        gas.Generate(eField, numberOfCollisions);
+        gas.Generate(eField, numberOfCollisions, generateVerbose);
 
         gas.Write(gasFilenameOutput);
 
