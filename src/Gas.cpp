@@ -5,13 +5,13 @@
 #include "Gas.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <regex>
 #include <string>
-#include <vector>
-
-#include <filesystem>
 #include <thread>
+#include <vector>
 
 using namespace std;
 using namespace Garfield;
@@ -80,6 +80,21 @@ void Gas::Write(const string& filename) const {
 }
 
 std::string Gas::GetName() const {
+    // Ar/iC4H10 (97.7/2.3) -> Ar2p3iC4H10
+    const auto components = GetComponents();
+
+    string name;
+    name += components.first[0];
+    for (unsigned int i = 1; i < components.first.size(); i++) {
+        string fractionString = to_string(components.second[i] * 100);
+        fractionString = std::regex_replace(fractionString, std::regex("\\."), "p");  // replace '.' by 'p'
+        fractionString = std::regex_replace(fractionString, std::regex("[0]+$"), ""); // remove trailing zeros
+        name += fractionString + components.first[i];
+    }
+    return name;
+}
+
+std::string Gas::GetGarfieldName() const {
     return gas->GetName();
 }
 

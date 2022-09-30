@@ -16,6 +16,8 @@ public:
         const std::vector<double>& fractions);
 
     std::string GetName() const;
+    std::string GetGarfieldName() const;
+
     std::pair<std::vector<std::string>, std::vector<double>> GetComponents() const;
     double GetTemperature() const;
     double GetPressure() const;
