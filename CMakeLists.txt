@@ -1,12 +1,12 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(gas_generator)
+project(gas-generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIBRARY_NAME ${PROJECT_NAME})
-set(EXECUTABLE_NAME ${PROJECT_NAME}-cli)
+set(LIBRARY_NAME GasGenerator)
+set(EXECUTABLE_NAME gas-generator)
 
 add_library(${LIBRARY_NAME} SHARED)
 
@@ -15,31 +15,31 @@ find_package(ROOT REQUIRED)
 # Garfield
 find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
 if (NOT Garfield_FOUND)
-    set(GARFIELD_HASH 0b769960696833d1f29f825d9e6a2295cfef6182)
-    message(STATUS "Garfield not found. Garfield will be built from source (hash ${GARFIELD_HASH})")
+    set(GARFIELD_GIT_ID 0b769960696833d1f29f825d9e6a2295cfef6182)
+    message(STATUS "Garfield not found. Garfield will be built from source (Git ID ${GARFIELD_GIT_ID})")
     include(FetchContent)
     FetchContent_Declare(
             Garfield
             GIT_REPOSITORY https://gitlab.cern.ch/garfield/garfieldpp
-            GIT_TAG ${GARFIELD_HASH}
+            GIT_TAG ${GARFIELD_GIT_ID}
     )
     set(WITH_EXAMPLES OFF) # Do not build Garfield with examples
     FetchContent_MakeAvailable(Garfield)
     unset(WITH_EXAMPLES) # Do not pollute the scope
 else ()
-    message(STATUS "Garfield found")
+    message(STATUS "Garfield found (${Garfield_VERSION})")
 endif ()
 
 # nlohmann json
 find_package(nlohmann_json QUIET)
 if (NOT nlohmann_json_FOUND)
-    set(nlohmann_json_HASH v3.11.2)
-    message(STATUS "nlohmann_json not found. nlohmann_json will be built from source (hash ${nlohmann_json_HASH})")
+    set(nlohmann_json_GIT_ID v3.11.2)
+    message(STATUS "nlohmann_json not found. nlohmann_json will be built from source (Git ID ${nlohmann_json_GIT_ID})")
     include(FetchContent)
     FetchContent_Declare(
             nlohmann_json
             GIT_REPOSITORY https://github.com/nlohmann/json
-            GIT_TAG ${nlohmann_json_HASH}
+            GIT_TAG ${nlohmann_json_GIT_ID}
     )
     FetchContent_MakeAvailable(nlohmann_json)
 else ()
