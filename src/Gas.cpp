@@ -84,11 +84,24 @@ std::string Gas::GetName() const {
 }
 
 std::pair<std::vector<std::string>, std::vector<double>> Gas::GetComponents() const {
+
+    std::vector<std::pair<std::string, double>> components(gas->GetNumberOfComponents());
+    for (unsigned int i = 0; i < components.size(); i++) {
+        gas->GetComponent(i, components[i].first, components[i].second);
+    }
+
+    // sort them in descending order of gas fractions
+    sort(components.begin(), components.end(), [](auto& left, auto& right) {
+        return left.second > right.second;
+    });
+
     std::vector<std::string> names(gas->GetNumberOfComponents());
     std::vector<double> fractions(gas->GetNumberOfComponents());
-    for (unsigned int i = 0; i < gas->GetNumberOfComponents(); i++) {
-        gas->GetComponent(i, names[i], fractions[i]);
+    for (unsigned int i = 0; i < components.size(); i++) {
+        names[i] = components[i].first;
+        fractions[i] = components[i].second;
     }
+
     return {names, fractions};
 }
 
