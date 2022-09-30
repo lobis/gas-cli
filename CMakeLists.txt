@@ -5,8 +5,8 @@ project(gas-generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIBRARY_NAME GasGenerator)
-set(EXECUTABLE_NAME gas-generator)
+set(LIBRARY_NAME Gas)
+set(EXECUTABLE_NAME gas-cli)
 
 add_library(${LIBRARY_NAME} SHARED)
 
@@ -66,3 +66,6 @@ add_executable(
 )
 
 target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} PRIVATE CLI11::CLI11)
+
+install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
+install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
