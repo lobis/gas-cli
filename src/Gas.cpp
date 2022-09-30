@@ -11,8 +11,13 @@
 
 #include <nlohmann/json.hpp>
 
+#include <filesystem>
+#include <thread>
+
 using namespace std;
 using namespace Garfield;
+
+namespace fs = std::filesystem;
 
 Gas::Gas() : gas(make_unique<MediumMagboltz>()) {}
 
@@ -92,6 +97,74 @@ void Gas::Generate() {
     const int numCollisions = 10;
     gas->GenerateGasTable(numCollisions);
 }
+
+/*
+ * Not working for some reason...
+void Gas::GenerateMT(unsigned int nThreads) {
+    const auto electricFieldLinear = linspace<double>(0, 1000, 2);
+    // const auto electricFieldLog = logspace<double>(1, 2000, 2);
+    vector<double> electricField(electricFieldLinear);
+    // electricField.insert(electricField.end(), electricFieldLog.begin(), electricFieldLog.end());
+    sort(electricField.begin(), electricField.end());
+
+    gas->SetFieldGrid(electricField, {0.0}, {HalfPi});
+
+    // split electric field into chunks for each thread to process
+    std::vector<std::vector<double>> electricFieldChunks(nThreads);
+    for (unsigned int i = 0; i < electricField.size(); i++) {
+        electricFieldChunks[i % nThreads].emplace_back(electricField[i]);
+    }
+    electricFieldChunks.erase(std::remove_if(electricFieldChunks.begin(), electricFieldChunks.end(), [](const vector<double>& v) { return v.empty(); }), electricFieldChunks.end());
+
+    std::vector<thread> threads;
+    std::mutex gasMutex;
+    for (unsigned int i = 0; i < nThreads; i++) {
+        const auto& electricFieldChunk = electricFieldChunks[i];
+        if (electricFieldChunk.empty()) {
+            // if more threads than E field values exists some will be empty
+            continue;
+        }
+        threads.emplace_back([this, &gasMutex](unsigned int threadId, const vector<double>& electricFieldChunk) {
+            // copy gas since copy constructor is deleted
+            gasMutex.lock();
+            basic_string<char> gas1, gas2, gas3, gas4, gas5, gas6;
+            double f1, f2, f3, f4, f5, f6;
+            gas->GetComposition(gas1, f1, gas2, f2, gas3, f3, gas4, f4, gas5, f5, gas6, f6);
+            MediumMagboltz gasThread(gas1, f1, gas2, f2, gas3, f3, gas4, f4, gas5, f5, gas6, f6);
+            gasThread.SetPressure(gas->GetPressure());
+            gasThread.SetTemperature(gas->GetTemperature());
+
+            gasThread.SetFieldGrid(electricFieldChunk, {0.0}, {HalfPi});
+
+            gasMutex.unlock();
+
+            std::string filename = string(std::tmpnam(nullptr)) + "-" + to_string(threadId) + ".gas";
+            this_thread::sleep_for(1.0s);
+
+            const int numCollisions = 10;
+            gasThread.GenerateGasTable(numCollisions, true); // This is the only expensive operation
+            gasThread.WriteGasFile(filename);
+
+            gasMutex.lock();
+
+            cout << "thread: " << threadId << " " << filename << endl;
+            for (const auto& value: electricFieldChunk) {
+                cout << "\t- " << value << endl;
+            }
+
+            gas->MergeGasFile(filename, true);
+            fs::remove(filename);
+
+            gasMutex.unlock();
+        },
+                             i, electricFieldChunk);
+    }
+
+    for (auto& t: threads) {
+        t.join();
+    }
+}
+*/
 
 void Gas::Write(const string& filename) const {
     gas->WriteGasFile(filename);
