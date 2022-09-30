@@ -31,8 +31,16 @@ public:
     void SetPressure(double pressureInBar);
     void SetTemperature(double temperatureInCelsius);
 
-    void Generate();
+    void Generate(std::vector<double> electricFieldValues, unsigned int numberOfCollisions = 10);
     void Write(const std::string& filename) const;
 
     std::string GetGasPropertiesJson() const;
 };
+
+namespace tools {
+    template<typename T>
+    std::vector<T> linspace(T start, T end, unsigned int points);
+
+    template<typename T>
+    std::vector<T> logspace(T start, T end, unsigned int points);
+} // namespace tools
