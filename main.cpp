@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     CLI::App* merge = app.add_subcommand("merge", "Merge multiple Garfield gas files into one");
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
     vector<string> mergeGasInputFilenames;
-    merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output")->required();
+    merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output. In case of overlaps, first file of list will take precedence")->required()->expected(2, numeric_limits<int>::max());
 
     app.require_subcommand(1);
 
@@ -104,6 +104,17 @@ int main(int argc, char** argv) {
         cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
 
     } else if (subcommandName == "merge") {
-        // TODO
+        Gas gas(mergeGasInputFilenames[0]);
+        for (size_t i = 1; i < mergeGasInputFilenames.size(); ++i) {
+            bool mergeOk = gas.Merge(mergeGasInputFilenames[i]);
+            if (!mergeOk) {
+                cerr << "error merging gas files" << endl;
+                return 1;
+            }
+        }
+
+        gas.Write(gasFilenameOutput);
+
+        cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
     }
 }

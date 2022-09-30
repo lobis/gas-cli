@@ -33,6 +33,7 @@ public:
 
     void Generate(std::vector<double> electricFieldValues, unsigned int numberOfCollisions = 10, bool verbose = false);
     void Write(const std::string& filename) const;
+    bool Merge(const std::string& gasFile, bool replaceOld = false);
 
     std::string GetGasPropertiesJson() const;
 };

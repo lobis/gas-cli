@@ -198,6 +198,10 @@ std::string Gas::GetGasPropertiesJson() const {
     return j.dump(4);
 }
 
+bool Gas::Merge(const string& gasFile, bool replaceOld) {
+    return gas->MergeGasFile(gasFile, replaceOld);
+}
+
 /*
  * Not working for some reason...
 void Gas::GenerateMT(unsigned int nThreads) {
