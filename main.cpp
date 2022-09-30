@@ -104,6 +104,22 @@ int main(int argc, char** argv) {
             name += "-nColl" + to_string(numberOfCollisions);
             name += "-E" + tools::numberToCleanNumberString(eField.front()) + "t" + tools::numberToCleanNumberString(eField.back()) + "Vcm";
             name += "-nE" + to_string(eField.size());
+            if (!generateGasElectricFieldLinearOptions.empty()) {
+                unsigned int nLin = generateGasElectricFieldLinearOptions[2];
+                if (nLin == eField.size()) {
+                    name += "lin";
+                } else {
+                    name += "lin" + to_string(nLin);
+                }
+            }
+            if (!generateGasElectricFieldLogOptions.empty()) {
+                unsigned int nLog = generateGasElectricFieldLogOptions[2];
+                if (nLog == eField.size()) {
+                    name += "log";
+                } else {
+                    name += "log" + to_string(nLog);
+                }
+            }
             name += ".gas";
             gasFilenameOutput = name;
         }
