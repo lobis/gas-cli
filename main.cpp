@@ -19,14 +19,24 @@ int main(int argc, char** argv) {
 
     CLI::App* read = app.add_subcommand("read", "Read from a gas file to read properties such as drift velocity of diffusion coefficients");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
+    string gasReadOutputJsonFilepath;
+    read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file");
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using the configuration");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
     vector<string> generateGasComponentsString;
-    generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the for of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required();
+    generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
     double pressure = 1.0, temperature = 20.0;
     generate->add_option("--pressure", pressure, "Gas pressure in bar");
-    generate->add_option("--temperature", temperature, "Gas temperature in C");
+    generate->add_option("--temperature", temperature, "Gas temperature in Celsius");
+    unsigned int numberOfCollisions = 10;
+    generate->add_option("--collisions", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
+    vector<double> generateGasElectricFieldValues;
+    generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
+    vector<double> generateGasElectricFieldLinearOptions;
+    generate->add_option("--electric-field-linear,--field-lin,--efield-lin,--E-lin", generateGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
+    vector<double> generateGasElectricFieldLogOptions;
+    generate->add_option("--electric-field-log,--field-log,--efield-log,--E-log", generateGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
 
     CLI::App* merge = app.add_subcommand("merge", "Merge multiple Garfield gas files into one");
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
@@ -63,21 +73,22 @@ int main(int argc, char** argv) {
         gas.SetPressure(pressure);
         gas.SetTemperature(temperature);
 
+        // electric field
+        auto& eField = generateGasElectricFieldValues;
+        if (!generateGasElectricFieldLinearOptions.empty()) {
+            const vector<double> electricFieldLinear = tools::linspace<double>(generateGasElectricFieldLinearOptions[0], generateGasElectricFieldLinearOptions[1], static_cast<unsigned int>(generateGasElectricFieldLinearOptions[2]));
+            eField.insert(eField.end(), electricFieldLinear.begin(), electricFieldLinear.end());
+        }
+        if (!generateGasElectricFieldLogOptions.empty()) {
+            const vector<double> electricFieldLog = tools::logspace<double>(generateGasElectricFieldLogOptions[0], generateGasElectricFieldLogOptions[1], static_cast<unsigned int>(generateGasElectricFieldLogOptions[2]));
+            eField.insert(eField.end(), electricFieldLog.begin(), electricFieldLog.end());
+        }
+        if (eField.empty()) {
+            cerr << "No electric field values provided (--help)" << endl;
+            return 1;
+        }
+
     } else if (subcommandName == "merge") {
         // TODO
     }
-
-    /*
-        double quencherFraction = 2.3;
-        Gas gas({"Ar", "C4H10"}, {100 - quencherFraction, quencherFraction});
-        gas.SetPressure(1.4);
-
-        // gas.Generate();
-        // gas.Write("/tmp/mt.gas");
-
-        gas = Gas("/root/long.gas");
-
-        cout << gas.GetGasPropertiesJson() << endl;
-
-    */
 }
