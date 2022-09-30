@@ -32,8 +32,15 @@ Gas::Gas(const vector<string>& _components,
         cerr << "cannot initialize gas with empty components" << endl;
         exit(1);
     }
-    if (components.size() == 1 && fractions.empty()) {
-        fractions.emplace_back(1.0);
+    if (!components.empty() && fractions.size() == components.size() - 1) {
+        double sum = 0;
+        for (const auto& value: fractions) { sum += value; }
+        // fractions can be numbers between 0 and 1 or %
+        if (sum > 1.0) {
+            fractions.emplace_back(100.0 - sum);
+        } else {
+            fractions.emplace_back(1.0 - sum);
+        }
     }
     if (components.size() != fractions.size()) {
         cerr << "number of component names and fractions mismatch" << endl;
