@@ -7,6 +7,7 @@
 #include "CLI/Formatter.hpp"
 
 #include "Gas.h"
+#include "Tools.h"
 
 using namespace std;
 

@@ -36,11 +36,3 @@ public:
 
     std::string GetGasPropertiesJson() const;
 };
-
-namespace tools {
-    template<typename T>
-    std::vector<T> linspace(T start, T end, unsigned int points);
-
-    template<typename T>
-    std::vector<T> logspace(T start, T end, unsigned int points);
-} // namespace tools
