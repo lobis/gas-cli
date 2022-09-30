@@ -18,12 +18,12 @@ int main(int argc, char** argv) {
     string gasFilenameInput;
     string gasFilenameOutput;
 
-    CLI::App* read = app.add_subcommand("read", "Read from a gas file to read properties such as drift velocity of diffusion coefficients");
+    CLI::App* read = app.add_subcommand("read", "Read from a gas file properties such as drift velocity of diffusion coefficients and generate a JSON file with the results");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
     string gasReadOutputJsonFilepath;
     read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file");
 
-    CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using the configuration");
+    CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
     vector<string> generateGasComponentsString;
     generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
@@ -47,6 +47,11 @@ int main(int argc, char** argv) {
     app.require_subcommand(1);
 
     CLI11_PARSE(app, argc, argv);
+
+    if (!gasFilenameOutput.empty()) {
+        // absolute path
+        gasFilenameOutput = std::filesystem::canonical(gasFilenameOutput);
+    }
 
     const auto subcommand = app.get_subcommands().back();
 
@@ -88,6 +93,13 @@ int main(int argc, char** argv) {
             cerr << "No electric field values provided (--help)" << endl;
             return 1;
         }
+        sort(eField.begin(), eField.end());
+
+        gas.Generate(eField, numberOfCollisions);
+
+        gas.Write(gasFilenameOutput);
+
+        cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
 
     } else if (subcommandName == "merge") {
         // TODO
