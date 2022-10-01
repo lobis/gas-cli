@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <regex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -21,7 +20,11 @@ namespace fs = std::filesystem;
 
 Gas::Gas() : gas(make_unique<MediumMagboltz>()) {}
 
-Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) { gas->LoadGasFile(gasFilepath); }
+Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) {
+    if (!gas->LoadGasFile(gasFilepath)) {
+        throw runtime_error("gas file not found: " + gasFilepath);
+    }
+}
 
 Gas::Gas(const vector<string>& _components,
          const vector<double>& _fractions) {
