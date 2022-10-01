@@ -34,6 +34,8 @@ int main(int argc, char** argv) {
     generate->add_option("--collisions", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
     bool generateVerbose = false;
     generate->add_flag("--verbose", generateVerbose, "Garfield verbosity");
+    bool generateProgress = true;
+    generate->add_flag("--progress,!--no-progress", generateProgress, "Save progress periodically to output file (defaults to true)");
     vector<double> generateGasElectricFieldValues;
     generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
     vector<double> generateGasElectricFieldLinearOptions;
@@ -126,15 +128,24 @@ int main(int argc, char** argv) {
 
         cout << "gas file will be saved to '" << gasFilenameOutput << "'" << endl;
 
-        gas.Generate(eField, numberOfCollisions, generateVerbose);
-
-        gas.Write(gasFilenameOutput);
+        if (!generateProgress) {
+            gas.Generate(eField, numberOfCollisions, generateVerbose);
+            gas.Write(gasFilenameOutput);
+        } else {
+            for (unsigned int i = 0; i < eField.size(); ++i) {
+                gas.Generate({eField[i]}, numberOfCollisions, generateVerbose);
+                if (i > 0) {
+                    gas.Merge(gasFilenameOutput);
+                }
+                gas.Write(gasFilenameOutput);
+            }
+        }
 
         cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
 
     } else if (subcommandName == "merge") {
         Gas gas(mergeGasInputFilenames[0]);
-        for (size_t i = 1; i < mergeGasInputFilenames.size(); ++i) {
+        for (unsigned int i = 1; i < mergeGasInputFilenames.size(); ++i) {
             bool mergeOk = gas.Merge(mergeGasInputFilenames[i]);
             if (!mergeOk) {
                 cerr << "error merging gas files" << endl;
