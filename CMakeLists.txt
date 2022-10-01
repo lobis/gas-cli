@@ -12,12 +12,13 @@ add_library(${LIBRARY_NAME} SHARED)
 
 find_package(ROOT REQUIRED)
 
+include(FetchContent)
+
 # Garfield
 find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
 if (NOT Garfield_FOUND)
     set(GARFIELD_GIT_ID 0b769960696833d1f29f825d9e6a2295cfef6182)
     message(STATUS "Garfield not found. Garfield will be built from source (Git ID ${GARFIELD_GIT_ID})")
-    include(FetchContent)
     FetchContent_Declare(
             Garfield
             GIT_REPOSITORY https://gitlab.cern.ch/garfield/garfieldpp
@@ -47,7 +48,6 @@ else ()
 endif ()
 
 # cli11 (CLI parser)
-include(FetchContent)
 FetchContent_Declare(
         cli11
         GIT_REPOSITORY https://github.com/CLIUtils/CLI11
@@ -69,3 +69,5 @@ target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} PRIVATE CLI11::C
 
 install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
+
+add_subdirectory(tests)
