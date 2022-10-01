@@ -10,7 +10,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Windows
 FetchContent_MakeAvailable(googletest)
 
-set(TESTING_EXECUTABLE "test${LIBRARY_NAME}")
+set(TESTING_EXECUTABLE "tests")
 
 enable_testing()
 
@@ -19,7 +19,7 @@ FILE(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(${TESTING_EXECUTABLE} ${SOURCES})
 
 target_link_libraries(
-        ${TESTING_EXECUTABLE} PUBLIC
+        ${TESTING_EXECUTABLE} PRIVATE
         ${LIBRARY_NAME}
         gtest_main
 )

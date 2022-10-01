@@ -70,4 +70,4 @@ target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} PRIVATE CLI11::C
 install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
 
-add_subdirectory(tests)
+add_subdirectory(tests EXCLUDE_FROM_ALL)
