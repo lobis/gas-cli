@@ -198,33 +198,41 @@ std::string Gas::GetGasPropertiesJson() const {
     std::transform(electricField.begin(), electricField.end(),
                    electronDriftVelocity.begin(),
                    [this](double e) { return GetElectronDriftVelocity(e); });
-    j["electron_drift_velocity"] = electronDriftVelocity;
+    if (std::any_of(electronDriftVelocity.begin(), electronDriftVelocity.end(), [](double e) { return e != 0; })) {
+        j["electron_drift_velocity"] = electronDriftVelocity;
+    }
 
     vector<double> electronTransversalDiffusion(electricField.size());
     std::transform(electricField.begin(), electricField.end(),
                    electronTransversalDiffusion.begin(),
                    [this](double e) { return GetElectronTransversalDiffusion(e); });
-    j["electron_transversal_diffusion"] = electronTransversalDiffusion;
+    if (std::any_of(electronTransversalDiffusion.begin(), electronTransversalDiffusion.end(), [](double e) { return e != 0; })) {
+        j["electron_transversal_diffusion"] = electronTransversalDiffusion;
+    }
 
     vector<double> electronLongitudinalDiffusion(electricField.size());
     std::transform(electricField.begin(), electricField.end(),
                    electronLongitudinalDiffusion.begin(),
                    [this](double e) { return GetElectronLongitudinalDiffusion(e); });
-    j["electron_longitudinal_diffusion"] = electronLongitudinalDiffusion;
+    if (std::any_of(electronLongitudinalDiffusion.begin(), electronLongitudinalDiffusion.end(), [](double e) { return e != 0; })) {
+        j["electron_longitudinal_diffusion"] = electronLongitudinalDiffusion;
+    }
 
-    /*
     vector<double> electronTownsend(electricField.size());
     std::transform(electricField.begin(), electricField.end(),
                    electronTownsend.begin(),
                    [this](double e) { return GetElectronTownsend(e); });
-    j["electron_townsend"] = electronTownsend;
+    if (std::any_of(electronTownsend.begin(), electronTownsend.end(), [](double e) { return e != 0; })) {
+        j["electron_townsend"] = electronTownsend;
+    }
 
     vector<double> electronAttachment(electricField.size());
     std::transform(electricField.begin(), electricField.end(),
                    electronAttachment.begin(),
                    [this](double e) { return GetElectronAttachment(e); });
-    j["electron_attachment"] = electronAttachment;
-    */
+    if (std::any_of(electronAttachment.begin(), electronAttachment.end(), [](double e) { return e != 0; })) {
+        j["electron_attachment"] = electronAttachment;
+    }
 
     return j.dump(4);
 }
