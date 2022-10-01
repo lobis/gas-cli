@@ -22,7 +22,8 @@ Gas::Gas() : gas(make_unique<MediumMagboltz>()) {}
 
 Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) {
     if (!gas->LoadGasFile(gasFilepath)) {
-        throw runtime_error("gas file not found: " + gasFilepath);
+        cerr << "gas file not found: " << gasFilepath << endl;
+        exit(1);
     }
 }
 
