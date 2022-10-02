@@ -132,7 +132,8 @@ int main(int argc, char** argv) {
             gas.Generate(eField, numberOfCollisions, generateVerbose);
             gas.Write(gasFilenameOutput);
         } else {
-            for (unsigned int i = 0; i < eField.size(); ++i) {
+            tools::sortVectorForCompute(eField);
+            for (int i = 0; i < eField.size(); i++) {
                 gas.Generate({eField[i]}, numberOfCollisions, generateVerbose);
                 if (i > 0) {
                     gas.Merge(gasFilenameOutput);

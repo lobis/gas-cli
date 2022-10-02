@@ -2,6 +2,8 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
+#include <iostream>
 #include <regex>
 
 namespace tools {
@@ -18,7 +20,7 @@ namespace tools {
 
     template<typename T>
     std::vector<T> logspace(T start, T end, unsigned int points) {
-        std::vector<T> result = linspace(log10(start), log10(end), points);
+        std::vector<T> result = linspace<T>(log10(start), log10(end), points);
         std::transform(result.begin(), result.end(),
                        result.begin(),
                        [](double x) { return pow(10, x); });
@@ -36,6 +38,41 @@ namespace tools {
 
     std::string numberToCleanNumberString(double d) {
         return cleanNumberString(std::to_string(floor(d * 1000) / 1000));
+    }
+
+    void sortVectorForCompute(std::vector<double>& values) {
+        std::sort(values.begin(), values.end());
+        values.erase(std::unique(values.begin(), values.end()), values.end());
+
+        std::vector<double> toProcess(values);
+        values.clear();
+
+        while (!toProcess.empty()) {
+            unsigned int indexToRemove = 0;
+            double minDistanceMax = 0;
+            unsigned int minDistanceRepeatMax = 0;
+            for (unsigned int i = 0; i < toProcess.size(); i++) {
+                double minDistance = std::numeric_limits<double>::max();
+                unsigned int minDistanceRepeat = 0;
+                for (const auto& valueProcessed: values) {
+                    double diff = std::abs(toProcess[i] - valueProcessed);
+                    if (diff < minDistance) {
+                        minDistance = diff;
+                    }
+                    if (diff == minDistance) {
+                        minDistanceRepeat++;
+                    }
+                }
+                if (minDistance > minDistanceMax || (minDistance == minDistanceMax && minDistanceRepeat > minDistanceRepeatMax)) {
+                    minDistanceMax = minDistance;
+                    minDistanceRepeatMax = minDistanceRepeat;
+                    indexToRemove = i;
+                }
+            }
+
+            values.push_back(toProcess[indexToRemove]);
+            toProcess.erase(toProcess.begin() + indexToRemove);
+        }
     }
 
 } // namespace tools
