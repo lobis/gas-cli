@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     CLI::App* read = app.add_subcommand("read", "Read from a gas file properties such as drift velocity of diffusion coefficients and generate a JSON file with the results");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
     string gasReadOutputJsonFilepath;
-    read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file");
+    read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
@@ -62,7 +62,16 @@ int main(int argc, char** argv) {
     const string subcommandName = subcommand->get_name();
     if (subcommandName == "read") {
         Gas gas(gasFilenameInput);
-        cout << gas.GetGasPropertiesJson() << endl;
+        if (read->get_option("--json")->empty()) {
+            cout << gas.GetGasPropertiesJson() << endl;
+        } else {
+            if (gasReadOutputJsonFilepath.empty()) {
+                gasReadOutputJsonFilepath = gasFilenameInput + ".json";
+            }
+            gasReadOutputJsonFilepath = std::filesystem::weakly_canonical(gasReadOutputJsonFilepath);
+            cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
+            gas.WriteJson(gasReadOutputJsonFilepath);
+        }
     } else if (subcommandName == "generate") {
         vector<string> gasComponentNames;
         vector<double> gasComponentFractions;
