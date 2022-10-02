@@ -47,13 +47,6 @@ else ()
     message(STATUS "nlohmann_json found")
 endif ()
 
-# cli11 (CLI parser)
-FetchContent_Declare(
-        cli11
-        GIT_REPOSITORY https://github.com/CLIUtils/CLI11
-        GIT_TAG v2.2.0
-)
-FetchContent_MakeAvailable(cli11)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -64,6 +57,14 @@ add_executable(
         ${EXECUTABLE_NAME}
         main.cpp
 )
+
+# cli11 (CLI parser)
+FetchContent_Declare(
+        cli11
+        GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+        GIT_TAG v2.2.0
+)
+FetchContent_MakeAvailable(cli11)
 
 target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} PRIVATE CLI11::CLI11)
 

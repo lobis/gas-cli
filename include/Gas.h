@@ -1,11 +1,14 @@
+
 #pragma once
 
-#include "Garfield/FundamentalConstants.hh"
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "Garfield/MediumMagboltz.hh"
 
-#include <memory>
-
 class Gas {
+
 protected:
     std::unique_ptr<Garfield::MediumMagboltz> gas;
 

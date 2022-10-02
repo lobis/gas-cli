@@ -1,17 +1,15 @@
-//
-// Created by lobis on 28/09/2022.
-//
 
 #include "Gas.h"
 
 #include "Tools.h"
 
+#include "Garfield/FundamentalConstants.hh"
+#include "nlohmann/json.hpp"
+
 #include <algorithm>
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
-#include <vector>
 
 using namespace std;
 using namespace Garfield;
