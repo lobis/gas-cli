@@ -37,7 +37,7 @@ namespace tools {
     }
 
     std::string numberToCleanNumberString(double d) {
-        return cleanNumberString(std::to_string(floor(d * 1000) / 1000));
+        return cleanNumberString(std::to_string(round(d * 1000) / 1000));
     }
 
     void sortVectorForCompute(std::vector<double>& values) {
