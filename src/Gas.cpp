@@ -76,6 +76,9 @@ void Gas::Generate(vector<double> electricFieldValues, unsigned int numberOfColl
     // TODO: remove very close E field values
     gas->SetFieldGrid(electricFieldValues, {0.0}, {HalfPi});
 
+    gas->EnableThermalMotion();
+    // gas->EnablePenningTransfer()
+
     gas->GenerateGasTable(int(numberOfCollisions), verbose);
 }
 
