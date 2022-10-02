@@ -41,4 +41,5 @@ public:
     bool Merge(const std::string& gasFile, bool replaceOld = false);
 
     std::string GetGasPropertiesJson() const;
+    void WriteJson(const std::string& filename) const;
 };

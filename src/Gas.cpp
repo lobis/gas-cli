@@ -7,6 +7,7 @@
 #include "nlohmann/json.hpp"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -237,6 +238,12 @@ std::string Gas::GetGasPropertiesJson() const {
 
 bool Gas::Merge(const string& gasFile, bool replaceOld) {
     return gas->MergeGasFile(gasFile, replaceOld);
+}
+
+void Gas::WriteJson(const string& filename) const {
+    std::ofstream out(filename);
+    out << GetGasPropertiesJson();
+    out.close();
 }
 
 /*
