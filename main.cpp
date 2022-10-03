@@ -106,7 +106,8 @@ int main(int argc, char** argv) {
             cerr << "No electric field values provided (--help)" << endl;
             return 1;
         }
-        sort(eField.begin(), eField.end());
+
+        tools::removeSimilarElements(eField, tools::getDefaultToleranceForRemoval(eField));
 
         if (gasFilenameOutput.empty()) {
             string name = gas.GetName();
