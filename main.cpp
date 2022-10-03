@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
     vector<double> generateGasElectricFieldValues;
     generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
     vector<double> generateGasElectricFieldLinearOptions;
-    generate->add_option("--electric-field-linear,--field-lin,--efield-lin,--E-lin", generateGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
+    generate->add_option("--electric-field-linear,--electric-field-lin,--field-lin,--efield-lin,--E-lin", generateGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
     vector<double> generateGasElectricFieldLogOptions;
-    generate->add_option("--electric-field-log,--field-log,--efield-log,--E-log", generateGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
+    generate->add_option("--electric-field-log,--electric-field-log,--field-log,--efield-log,--E-log", generateGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
 
     CLI::App* merge = app.add_subcommand("merge", "Merge multiple Garfield gas files into one");
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
