@@ -34,3 +34,32 @@ TEST(Tools, sortVectorForCompute) {
     sortVectorForCompute(values);
     ASSERT_EQ(values, vector<double>({0, 100, 50, 70, 30, 60, 40, 80, 90, 20, 10}));
 }
+
+TEST(Tools, removeSimilarElements) {
+    vector<double> values = {0, 10, 10, 20, 20, 30, 20, 30};
+    removeSimilarElements(values);
+    ASSERT_EQ(values, vector<double>({0, 10, 20, 30}));
+}
+
+TEST(Tools, removeSimilarElementsTolerance) {
+    // Using this number of starting values and default tolerance we get 200 points
+    auto values = logspace<double>(0.1, 1000.0, 107);
+    for (const auto& value: linspace<double>(0, 1000, 110)) {
+        values.push_back(value);
+    }
+    std::sort(values.begin(), values.end());
+
+    const double tolerance = getDefaultToleranceForRemoval(values);
+    cout << "TOL: " << tolerance << endl;
+    ASSERT_NEAR(tolerance, 0.05, 0.0001);
+
+    ASSERT_EQ(values.size(), 217);
+
+    // We should only remove last element (1000.0) since it appears in both sequences
+    removeSimilarElements(values);
+
+    ASSERT_EQ(values.size(), 200);
+
+    ASSERT_NEAR(values.back(), 1000.0, 0.0005);
+    ASSERT_NEAR(values.front(), 0.0, 0.0005);
+}

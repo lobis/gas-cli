@@ -75,4 +75,22 @@ namespace tools {
         }
     }
 
+    void removeSimilarElements(std::vector<double>& values, double absoluteTolerance = 0.05) {
+        std::sort(values.begin(), values.end());
+
+        auto similar = [&absoluteTolerance](double a, double b) {
+            return std::abs(a - b) <= absoluteTolerance;
+        };
+
+        values.erase(std::unique(values.begin(), values.end(), similar), values.end());
+
+        std::sort(values.begin(), values.end());
+    }
+
+    double getDefaultToleranceForRemoval(const std::vector<double>& values) {
+        double min = *std::min_element(values.begin(), values.end());
+        double max = *std::max_element(values.begin(), values.end());
+        return (max - min) / 20000;
+    }
+
 } // namespace tools
