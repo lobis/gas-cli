@@ -35,6 +35,12 @@ A gas file can be generated from the command line parameters using the `generate
 gas-cli generate --components C4H10 2.3 Ar -o /tmp/test.gas --electric-field-log 1 1000 10
 ```
 
+multiple electric field configurations (linear, log, points) can be defined at once.
+Close points are discarded according to predefined tolerances. The command below will produce 200 entries.
+```
+gas-cli generate --components C4H10 2.3 Ar --pressure 1.0 --efield-lin 0 1000 110 --efield-log 0.1 1000 107 --collisions 10
+```
+
 ### Reading a gas file
 
 A gas file can be read and a json containing some useful gas properties can be generated using the `read` subcommand.
