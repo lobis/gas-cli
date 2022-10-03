@@ -30,3 +30,26 @@ jobs:
         run: |
           cmake --build build --target tests
           ctest --test-dir build/tests --output-on-failure
+
+  docker-publish:
+    name: Publish Docker image
+    runs-on: ubuntu-latest
+    needs: cmake
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CONTAINER_REGISTRY_GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          pull: true
+          push: true
+          tags: |
+            ghcr.io/lobis/gas-cli:latest
