@@ -16,13 +16,13 @@ int main(int argc, char** argv) {
 
     CLI::App app{"Gas CLI"};
 
-    string gasFilenameInput;
-    string gasFilenameOutput;
+    fs::path gasFilenameInput;
+    fs::path gasFilenameOutput;
     fs::path outputDirectory;
 
     CLI::App* read = app.add_subcommand("read", "Read from a gas file properties such as drift velocity of diffusion coefficients and generate a JSON file with the results");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
-    string gasReadOutputJsonFilepath;
+    fs::path gasReadOutputJsonFilepath;
     read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     read->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save json file into")->expected(1);
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
     CLI::App* merge = app.add_subcommand("merge", "Merge multiple Garfield gas files into one");
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
-    vector<string> mergeGasInputFilenames;
+    vector<fs::path> mergeGasInputFilenames;
     merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output. In case of overlaps, first file of list will take precedence")->required()->expected(2, numeric_limits<int>::max());
     merge->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save merged gas file into")->expected(1);
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
             cout << gas.GetGasPropertiesJson() << endl;
         } else {
             if (gasReadOutputJsonFilepath.empty()) {
-                gasReadOutputJsonFilepath = gasFilenameInput + ".json";
+                gasReadOutputJsonFilepath = gasFilenameInput / ".json";
             }
             gasReadOutputJsonFilepath = fs::weakly_canonical(gasReadOutputJsonFilepath);
             cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
