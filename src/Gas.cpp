@@ -112,6 +112,10 @@ std::pair<std::vector<std::string>, std::vector<double>> Gas::GetComponents() co
 
     // sort them in descending order of gas fractions
     sort(components.begin(), components.end(), [](auto& left, auto& right) {
+        if (left.second == right.second) {
+            // sort by name (e.g. "Ar" < "Ne")
+            return left.first < right.first;
+        }
         return left.second > right.second;
     });
 
