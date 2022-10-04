@@ -10,6 +10,7 @@
 #include "Tools.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
 
@@ -17,14 +18,17 @@ int main(int argc, char** argv) {
 
     string gasFilenameInput;
     string gasFilenameOutput;
+    fs::path outputDirectory;
 
     CLI::App* read = app.add_subcommand("read", "Read from a gas file properties such as drift velocity of diffusion coefficients and generate a JSON file with the results");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
     string gasReadOutputJsonFilepath;
     read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
+    read->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save json file into")->expected(1);
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
+    generate->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save gas file into")->expected(1);
     vector<string> generateGasComponentsString;
     generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
     double pressure = 1.0, temperature = 20.0;
@@ -47,14 +51,14 @@ int main(int argc, char** argv) {
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
     vector<string> mergeGasInputFilenames;
     merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output. In case of overlaps, first file of list will take precedence")->required()->expected(2, numeric_limits<int>::max());
+    merge->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save merged gas file into")->expected(1);
 
     app.require_subcommand(1);
 
     CLI11_PARSE(app, argc, argv);
 
-    if (!gasFilenameOutput.empty()) {
-        // absolute path
-        gasFilenameOutput = std::filesystem::weakly_canonical(gasFilenameOutput);
+    if (outputDirectory.empty()) {
+        outputDirectory = fs::current_path();
     }
 
     const auto subcommand = app.get_subcommands().back();
@@ -68,7 +72,7 @@ int main(int argc, char** argv) {
             if (gasReadOutputJsonFilepath.empty()) {
                 gasReadOutputJsonFilepath = gasFilenameInput + ".json";
             }
-            gasReadOutputJsonFilepath = std::filesystem::weakly_canonical(gasReadOutputJsonFilepath);
+            gasReadOutputJsonFilepath = fs::weakly_canonical(gasReadOutputJsonFilepath);
             cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
             gas.WriteJson(gasReadOutputJsonFilepath);
         }
@@ -136,6 +140,7 @@ int main(int argc, char** argv) {
             gasFilenameOutput = name;
         }
 
+        gasFilenameOutput = outputDirectory / fs::path(gasFilenameOutput);
         cout << "gas file will be saved to '" << gasFilenameOutput << "'" << endl;
 
         if (!generateProgress) {
