@@ -28,7 +28,7 @@ if (NOT Garfield_FOUND)
     message(STATUS "Garfield not found. Garfield will be built from source (Git ID ${GARFIELD_GIT_ID})")
     FetchContent_Declare(
             Garfield
-            GIT_REPOSITORY https://gitlab.cern.ch/garfield/garfieldpp
+            GIT_REPOSITORY https://gitlab.cern.ch/garfield/garfieldpp.git
             GIT_TAG ${GARFIELD_GIT_ID}
     )
     set(WITH_EXAMPLES OFF) # Do not build Garfield with examples
@@ -46,7 +46,7 @@ if (NOT nlohmann_json_FOUND)
     include(FetchContent)
     FetchContent_Declare(
             nlohmann_json
-            GIT_REPOSITORY https://github.com/nlohmann/json
+            GIT_REPOSITORY https://github.com/nlohmann/json.git
             GIT_TAG ${nlohmann_json_GIT_ID}
     )
     FetchContent_MakeAvailable(nlohmann_json)
@@ -68,7 +68,7 @@ add_executable(
 # cli11 (CLI parser)
 FetchContent_Declare(
         cli11
-        GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+        GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
         GIT_TAG v2.2.0
 )
 FetchContent_MakeAvailable(cli11)
