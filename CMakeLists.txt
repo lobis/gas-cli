@@ -14,8 +14,15 @@ find_package(ROOT REQUIRED)
 
 include(FetchContent)
 
+# Setting 'FIND_GARFIELD' to 'OFF' (-DFIND_GARFIELD=OFF) will prevent the build from looking for installed Garfield and will built it from source
+if (NOT DEFINED FIND_GARFIELD)
+    set(FIND_GARFIELD ON)
+endif ()
+
 # Garfield
-find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
+if (FIND_GARFIELD)
+    find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
+endif ()
 if (NOT Garfield_FOUND)
     set(GARFIELD_GIT_ID 0b769960696833d1f29f825d9e6a2295cfef6182)
     message(STATUS "Garfield not found. Garfield will be built from source (Git ID ${GARFIELD_GIT_ID})")
