@@ -37,8 +37,9 @@ gas-cli generate --components C4H10 2.3 Ar -o /tmp/test.gas --electric-field-log
 
 multiple electric field configurations (linear, log, points) can be defined at once.
 Close points are discarded according to predefined tolerances. The command below will produce 200 entries.
+
 ```
-gas-cli generate --components C4H10 2.3 Ar --pressure 1.0 --efield-lin 0 1000 110 --efield-log 0.1 1000 107 --collisions 10
+gas-cli generate --components Ar 48.85 Xe 48.85 C4H10 --pressure 1.0 --efield-lin 0 1000 110 --efield-log 0.1 1000 107 --collisions 10
 ```
 
 ### Reading a gas file
@@ -55,4 +56,12 @@ Multiple gas files can be combined into one using the `merge` subcommand.
 
 ```
 gas-cli merge -i file1.gas file2.gas file3.gas -o merge.gas
+```
+
+## Docker image
+
+A docker image is available as a [GitHub package](https://github.com/lobis/gas-generator/pkgs/container/gas-cli).
+
+```
+docker run --rm --pull=always ghcr.io/lobis/gas-cli --help
 ```
