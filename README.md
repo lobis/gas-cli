@@ -65,3 +65,9 @@ A docker image is available as a [GitHub package](https://github.com/lobis/gas-g
 ```
 docker run --rm --pull=always ghcr.io/lobis/gas-cli --help
 ```
+
+To run a gas simulation and save it to a local directory you can use the following command:
+
+```
+docker run -d --rm --pull=always --mount type=bind,source=/tmp/gases,target=/output ghcr.io/lobis/gas-cli generate --components Ar 48.85 Xe 48.85 C4H10 --dir /output --pressure 1.0 --efield-lin 0 1000 110 --efield-log 0.1 1000 107
+```
