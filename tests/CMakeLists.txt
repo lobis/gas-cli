@@ -14,19 +14,23 @@ set(TESTING_EXECUTABLE "tests")
 
 enable_testing()
 
-FILE(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+FILE(GLOB TESTING_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+file(GLOB EXECUTABLE_SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-add_executable(${TESTING_EXECUTABLE} ${SOURCES})
+add_executable(${TESTING_EXECUTABLE} ${TESTING_SOURCES})
+
+target_include_directories(${TESTING_EXECUTABLE} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_sources(${TESTING_EXECUTABLE} PRIVATE ${EXECUTABLE_SOURCES})
 
 target_link_libraries(
         ${TESTING_EXECUTABLE} PRIVATE
-        ${LIBRARY_NAME}
-        gtest_main
+        PUBLIC Garfield::Garfield
+        PRIVATE nlohmann_json::nlohmann_json gtest_main
 )
 
 include(GoogleTest)
 
 gtest_add_tests(
         TARGET ${TESTING_EXECUTABLE}
-        SOURCES ${SOURCES}
+        SOURCES ${TESTING_SOURCES}
 )

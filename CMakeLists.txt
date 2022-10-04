@@ -5,10 +5,7 @@ project(gas-generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(LIBRARY_NAME Gas)
 set(EXECUTABLE_NAME gas-cli)
-
-add_library(${LIBRARY_NAME} SHARED)
 
 find_package(ROOT REQUIRED)
 
@@ -54,16 +51,14 @@ else ()
     message(STATUS "nlohmann_json found")
 endif ()
 
-
-target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
-target_sources(${LIBRARY_NAME} PRIVATE ${sources})
-target_link_libraries(${LIBRARY_NAME} PUBLIC Garfield::Garfield PRIVATE nlohmann_json::nlohmann_json)
-
 add_executable(
         ${EXECUTABLE_NAME}
         main.cpp
 )
+
+file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+target_include_directories(${EXECUTABLE_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 
 # cli11 (CLI parser)
 FetchContent_Declare(
@@ -73,9 +68,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cli11)
 
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${LIBRARY_NAME} PRIVATE CLI11::CLI11)
+target_link_libraries(${EXECUTABLE_NAME}
+        PUBLIC Garfield::Garfield
+        PRIVATE nlohmann_json::nlohmann_json CLI11::CLI11
+        )
 
-install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
 
 add_subdirectory(tests EXCLUDE_FROM_ALL)

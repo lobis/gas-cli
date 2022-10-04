@@ -50,7 +50,7 @@ TEST(Tools, removeSimilarElementsTolerance) {
     std::sort(values.begin(), values.end());
 
     const double tolerance = getDefaultToleranceForRemoval(values);
-    cout << "TOL: " << tolerance << endl;
+
     ASSERT_NEAR(tolerance, 0.05, 0.0001);
 
     ASSERT_EQ(values.size(), 217);
