@@ -57,6 +57,10 @@ int main(int argc, char** argv) {
 
     CLI11_PARSE(app, argc, argv);
 
+    if (gasFilenameOutput.is_absolute() && !outputDirectory.empty()) {
+        cerr << "Cannot specify an output directory and an absolute path as output file" << endl;
+        return 1;
+    }
     if (outputDirectory.empty()) {
         outputDirectory = fs::current_path();
     }
@@ -72,7 +76,9 @@ int main(int argc, char** argv) {
             if (gasReadOutputJsonFilepath.empty()) {
                 gasReadOutputJsonFilepath = gasFilenameInput / ".json";
             }
-            gasReadOutputJsonFilepath = fs::weakly_canonical(gasReadOutputJsonFilepath);
+            if (!gasReadOutputJsonFilepath.is_absolute()) {
+                gasReadOutputJsonFilepath = outputDirectory / gasReadOutputJsonFilepath;
+            }
             cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
             gas.WriteJson(gasReadOutputJsonFilepath);
         }
@@ -140,7 +146,10 @@ int main(int argc, char** argv) {
             gasFilenameOutput = name;
         }
 
-        gasFilenameOutput = outputDirectory / fs::path(gasFilenameOutput);
+        if (!gasFilenameOutput.is_absolute()) {
+            gasFilenameOutput = outputDirectory / gasFilenameOutput;
+        }
+
         cout << "gas file will be saved to '" << gasFilenameOutput << "'" << endl;
 
         if (!generateProgress) {
@@ -167,6 +176,10 @@ int main(int argc, char** argv) {
                 cerr << "error merging gas files" << endl;
                 return 1;
             }
+        }
+
+        if (!gasFilenameOutput.is_absolute()) {
+            gasFilenameOutput = outputDirectory / gasFilenameOutput;
         }
 
         gas.Write(gasFilenameOutput);
