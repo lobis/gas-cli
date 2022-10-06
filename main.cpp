@@ -74,11 +74,10 @@ int main(int argc, char** argv) {
             cout << gas.GetGasPropertiesJson() << endl;
         } else {
             if (gasReadOutputJsonFilepath.empty()) {
-                gasReadOutputJsonFilepath = gasFilenameInput / ".json";
+                gasReadOutputJsonFilepath = string(gasFilenameInput.filename()) + ".json";
             }
-            if (!gasReadOutputJsonFilepath.is_absolute()) {
-                gasReadOutputJsonFilepath = outputDirectory / gasReadOutputJsonFilepath;
-            }
+            gasReadOutputJsonFilepath = outputDirectory / gasReadOutputJsonFilepath;
+
             cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
             gas.WriteJson(gasReadOutputJsonFilepath);
         }
