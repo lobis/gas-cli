@@ -41,6 +41,8 @@ int main(int argc, char** argv) {
     generate->add_flag("--verbose", generateVerbose, "Garfield verbosity");
     bool generateProgress = true;
     generate->add_flag("--progress,!--no-progress", generateProgress, "Save progress periodically to output file (defaults to true)");
+    bool generatePrint = false;
+    generate->add_flag("--print", generatePrint, "Print gas properties to stdout after generating gas file (defaults to false)");
     vector<double> generateGasElectricFieldValues;
     generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
     vector<double> generateGasElectricFieldLinearOptions;
@@ -177,6 +179,10 @@ int main(int argc, char** argv) {
 
             cout << "gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
             gas.WriteJson(gasPropertiesJsonFilename);
+        }
+
+        if (generatePrint) {
+            cout << gas.GetGasPropertiesJson() << endl;
         }
 
     } else if (subcommandName == "merge") {
