@@ -83,14 +83,16 @@ void Gas::Write(const string& filename) const {
 }
 
 std::string Gas::GetName() const {
-    // Ar/iC4H10 (97.7/2.3) -> Ar2p3iC4H10
+    // C2H6/CF4/Ne/H2O (9.99/9.99/79.92/0.1) -> Ne_79p92-C2H6_9p99-CF4_9p99-H2O_0p1
     const auto components = GetComponents();
 
     string name;
-    name += components.first[0];
-    for (unsigned int i = 1; i < components.first.size(); i++) {
+    for (unsigned int i = 0; i < components.first.size(); i++) {
+        if (i > 0) {
+            name += '-';
+        }
         string fractionString = to_string(components.second[i] * 100);
-        name += tools::cleanNumberString(fractionString) + components.first[i];
+        name += components.first[i] + '_' + tools::cleanNumberString(fractionString);
     }
     return name;
 }
