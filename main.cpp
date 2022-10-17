@@ -19,23 +19,24 @@ int main(int argc, char** argv) {
     fs::path gasFilenameInput;
     fs::path gasFilenameOutput;
     fs::path outputDirectory;
+    fs::path gasPropertiesJsonFilename;
 
     CLI::App* read = app.add_subcommand("read", "Read from a gas file properties such as drift velocity of diffusion coefficients and generate a JSON file with the results");
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
-    fs::path gasReadOutputJsonFilepath;
-    read->add_option("-o,--output,--json", gasReadOutputJsonFilepath, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
+    read->add_option("-o,--output,--json", gasPropertiesJsonFilename, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     read->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save json file into")->expected(1);
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
     generate->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save gas file into")->expected(1);
+    generate->add_option("--json", gasPropertiesJsonFilename, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     vector<string> generateGasComponentsString;
     generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
     double pressure = 1.0, temperature = 20.0;
     generate->add_option("--pressure", pressure, "Gas pressure in bar");
-    generate->add_option("--temperature", temperature, "Gas temperature in Celsius");
+    generate->add_option("--temperature,--temp", temperature, "Gas temperature in Celsius");
     unsigned int numberOfCollisions = 10;
-    generate->add_option("--collisions", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
+    generate->add_option("--collisions,--ncoll,--nColl", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
     bool generateVerbose = false;
     generate->add_flag("--verbose", generateVerbose, "Garfield verbosity");
     bool generateProgress = true;
@@ -73,13 +74,13 @@ int main(int argc, char** argv) {
         if (read->get_option("--json")->empty()) {
             cout << gas.GetGasPropertiesJson() << endl;
         } else {
-            if (gasReadOutputJsonFilepath.empty()) {
-                gasReadOutputJsonFilepath = string(gasFilenameInput.filename()) + ".json";
+            if (gasPropertiesJsonFilename.empty()) {
+                gasPropertiesJsonFilename = string(gasFilenameInput.filename()) + ".json";
             }
-            gasReadOutputJsonFilepath = outputDirectory / gasReadOutputJsonFilepath;
+            gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
-            cout << "gas properties json will be saved to '" << gasReadOutputJsonFilepath << "'" << endl;
-            gas.WriteJson(gasReadOutputJsonFilepath);
+            cout << "gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
+            gas.WriteJson(gasPropertiesJsonFilename);
         }
     } else if (subcommandName == "generate") {
         vector<string> gasComponentNames;
@@ -149,7 +150,7 @@ int main(int argc, char** argv) {
             gasFilenameOutput = outputDirectory / gasFilenameOutput;
         }
 
-        cout << "gas file will be saved to '" << gasFilenameOutput << "'" << endl;
+        cout << "gas file will be saved to " << gasFilenameOutput << endl;
 
         if (!generateProgress) {
             gas.Generate(eField, numberOfCollisions, generateVerbose);
@@ -165,7 +166,18 @@ int main(int argc, char** argv) {
             }
         }
 
-        cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
+        cout << "gas file saved to " << gasFilenameOutput << endl;
+
+        if (!generate->get_option("--json")->empty()) {
+            // user specified to also save gas properties as json
+            if (gasPropertiesJsonFilename.empty()) {
+                gasPropertiesJsonFilename = string(gasFilenameOutput.filename()) + ".json";
+            }
+            gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
+
+            cout << "gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
+            gas.WriteJson(gasPropertiesJsonFilename);
+        }
 
     } else if (subcommandName == "merge") {
         Gas gas(mergeGasInputFilenames[0]);
@@ -183,6 +195,6 @@ int main(int argc, char** argv) {
 
         gas.Write(gasFilenameOutput);
 
-        cout << "gas file saved to '" << gasFilenameOutput << "'" << endl;
+        cout << "gas file saved to " << gasFilenameOutput << endl;
     }
 }
