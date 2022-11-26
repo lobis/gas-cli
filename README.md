@@ -8,7 +8,8 @@ reading [Garfield++](https://gitlab.cern.ch/garfield/garfieldpp) gas files.
 ## Installation
 
 [ROOT](https://github.com/root-project/root) is required as it is a dependency of Garfield itself even though it's not
-really needed for this project (TODO: remove ROOT dependency).
+really needed for this project.
+If you know a way of removing this dependency, please contact me or post and issue with your suggestion.
 
 Garfield is not a required dependency as the CMake configuration will build it from source if its not found on the
 system. This is not practical for ROOT as it's a very large dependency.
