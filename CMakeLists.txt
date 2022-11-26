@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(EXECUTABLE_NAME gas-cli)
 
-find_package(ROOT REQUIRED)
-
 include(FetchContent)
 
 # Setting 'FIND_GARFIELD' to 'OFF' (-DFIND_GARFIELD=OFF) will prevent the build from looking for installed Garfield and will built it from source
