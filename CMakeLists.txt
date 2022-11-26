@@ -19,7 +19,7 @@ if (FIND_GARFIELD)
     find_package(Garfield QUIET) # sets Garfield_FOUND to 1 (found) or 0 (not found)
 endif ()
 if (NOT Garfield_FOUND)
-    set(GARFIELD_GIT_ID 0b769960696833d1f29f825d9e6a2295cfef6182)
+    set(GARFIELD_GIT_ID e0a9f171595b5281c61c12a6a1d1309af7acb950)
     message(STATUS "Garfield not found. Garfield will be built from source (Git ID ${GARFIELD_GIT_ID})")
     FetchContent_Declare(
             Garfield
