@@ -121,6 +121,12 @@ int main(int argc, char** argv) {
 
         tools::removeSimilarElements(eField, tools::getDefaultToleranceForRemoval(eField));
 
+        cout << "Electric field values (V/cm):";
+        for (const auto& e: eField) {
+            cout << " " << e;
+        }
+        cout << endl;
+
         if (gasFilenameOutput.empty()) {
             string name = gas.GetName();
             name += "-T" + tools::numberToCleanNumberString(temperature) + "C";
