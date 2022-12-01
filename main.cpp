@@ -182,6 +182,7 @@ int main(int argc, char** argv) {
                 if (i > 0) {
                     gas.Merge(gasFilenameOutput);
                 }
+                cout << "progress: " << i + 1 << "/" << eField.size() << endl;
                 gas.Write(gasFilenameOutput);
             }
         }
