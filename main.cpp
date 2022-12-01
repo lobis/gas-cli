@@ -160,6 +160,18 @@ int main(int argc, char** argv) {
 
         cout << "gas file will be saved to " << gasFilenameOutput << endl;
 
+        {
+            // create empty file
+            fs::remove(gasFilenameOutput);
+            ofstream ofs(gasFilenameOutput);
+            ofs.close();
+
+            if (!fs::exists(gasFilenameOutput)) {
+                cerr << "gas file '" << gasFilenameOutput << "' could not be created" << endl;
+                return 1;
+            }
+        }
+
         if (!generateProgress) {
             gas.Generate(eField, numberOfCollisions, generateVerbose);
             gas.Write(gasFilenameOutput);
@@ -192,6 +204,7 @@ int main(int argc, char** argv) {
         }
 
     } else if (subcommandName == "merge") {
+        // mergeGasInputFilenames is guaranteed to have at least 2 elements
         Gas gas(mergeGasInputFilenames[0]);
         for (unsigned int i = 1; i < mergeGasInputFilenames.size(); ++i) {
             bool mergeOk = gas.Merge(mergeGasInputFilenames[i]);
