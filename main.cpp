@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
 
-    CLI::App app{"Gas CLI"};
+    CLI::App app{"Gas CLI (https://github.com/lobis/gas-cli)"};
 
     fs::path gasFilenameInput;
     fs::path gasFilenameOutput;
