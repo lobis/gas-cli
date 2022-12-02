@@ -208,43 +208,47 @@ int main(int argc, char** argv) {
         }
 
     } else if (subcommandName == "merge") {
+        if (!gasFilenameOutput.is_absolute()) {
+            gasFilenameOutput = outputDirectory / gasFilenameOutput;
+        }
+
+        cout << "gas file will be saved to " << gasFilenameOutput << endl;
+
         // mergeGasInputFilenames is guaranteed to have at least 2 elements
         cout << "merging " << mergeGasInputFilenames.size() << " gas files:" << endl;
         for (const auto& filename: mergeGasInputFilenames) {
             cout << "    - " << filename << endl;
         }
 
-        Gas gas(mergeGasInputFilenames[0]);
-        for (unsigned int i = 1; i < mergeGasInputFilenames.size(); ++i) {
-            cout << "merging " << mergeGasInputFilenames[i] << endl;
+        for (unsigned int i = 0; i < mergeGasInputFilenames.size() - 1; i++) {
+            auto gas = i == 0 ? Gas(mergeGasInputFilenames[0]) : Gas(gasFilenameOutput);
+
+            const auto& toMerge = mergeGasInputFilenames[i + 1];
+            cout << "merging " << toMerge << endl;
 
             if (mergeVerbose) {
-                Gas gasToMerge(mergeGasInputFilenames[i]);
-                cout << "file to merge electric field values (V/cm):";
+                Gas gasToMerge(toMerge);
+                cout << "electric field values (V/cm) for file to merge:";
                 for (const auto& value: gasToMerge.GetTableElectricField()) {
-                    cout << value << " ";
+                    cout << " " << value;
                 }
                 cout << endl;
 
-                cout << "current file electric field values (V/cm):";
+                cout << "electric field values (V/cm) for base file:";
                 for (const auto& value: gas.GetTableElectricField()) {
                     cout << " " << value;
                 }
                 cout << endl;
             }
 
-            bool mergeOk = gas.Merge(mergeGasInputFilenames[i]);
+            bool mergeOk = gas.Merge(toMerge);
             if (!mergeOk) {
                 cerr << "error merging gas files" << endl;
                 return 1;
             }
-        }
 
-        if (!gasFilenameOutput.is_absolute()) {
-            gasFilenameOutput = outputDirectory / gasFilenameOutput;
+            gas.Write(gasFilenameOutput);
         }
-
-        gas.Write(gasFilenameOutput);
 
         cout << "gas file saved to " << gasFilenameOutput << endl;
     }
