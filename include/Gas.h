@@ -25,6 +25,7 @@ public:
     double GetTemperature() const;
     double GetPressure() const;
     std::vector<double> GetTableElectricField() const;
+    inline std::vector<double> GetElectricFieldValues() const { return GetTableElectricField(); }
 
     double GetElectronDriftVelocity(double electricField) const;
     std::pair<double, double> GetElectronDiffusion(double electricField) const;
