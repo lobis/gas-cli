@@ -10,6 +10,7 @@
 #include "Tools.h"
 
 using namespace std;
+
 namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
@@ -55,6 +56,8 @@ int main(int argc, char** argv) {
     vector<fs::path> mergeGasInputFilenames;
     merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output. In case of overlaps, first file of list will take precedence")->required()->expected(2, numeric_limits<int>::max());
     merge->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save merged gas file into")->expected(1);
+    bool mergeVerbose = false;
+    merge->add_flag("--verbose", mergeVerbose, "Merge verbosity");
 
     app.require_subcommand(1);
 
@@ -206,8 +209,30 @@ int main(int argc, char** argv) {
 
     } else if (subcommandName == "merge") {
         // mergeGasInputFilenames is guaranteed to have at least 2 elements
+        cout << "merging " << mergeGasInputFilenames.size() << " gas files:" << endl;
+        for (const auto& filename: mergeGasInputFilenames) {
+            cout << "    - " << filename << endl;
+        }
+
         Gas gas(mergeGasInputFilenames[0]);
         for (unsigned int i = 1; i < mergeGasInputFilenames.size(); ++i) {
+            cout << "merging " << mergeGasInputFilenames[i] << endl;
+
+            if (mergeVerbose) {
+                Gas gasToMerge(mergeGasInputFilenames[i]);
+                cout << "file to merge electric field values (V/cm):";
+                for (const auto& value: gasToMerge.GetTableElectricField()) {
+                    cout << value << " ";
+                }
+                cout << endl;
+
+                cout << "current file electric field values (V/cm):";
+                for (const auto& value: gas.GetTableElectricField()) {
+                    cout << " " << value;
+                }
+                cout << endl;
+            }
+
             bool mergeOk = gas.Merge(mergeGasInputFilenames[i]);
             if (!mergeOk) {
                 cerr << "error merging gas files" << endl;
