@@ -65,14 +65,15 @@ target_sources(${EXECUTABLE_NAME} PRIVATE ${SOURCES})
 FetchContent_Declare(
         cli11
         GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-        GIT_TAG v2.2.0
+        GIT_TAG v2.3.1
 )
 FetchContent_MakeAvailable(cli11)
 
-target_link_libraries(${EXECUTABLE_NAME}
+target_link_libraries(
+        ${EXECUTABLE_NAME}
         PUBLIC Garfield::Garfield
         PRIVATE nlohmann_json::nlohmann_json CLI11::CLI11
-        )
+)
 
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
 
