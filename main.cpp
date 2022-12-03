@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
             }
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
-            cout << "gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
+            cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
             gas.WriteJson(gasPropertiesJsonFilename);
         }
     } else if (subcommandName == "generate") {
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
             gasFilenameOutput = outputDirectory / gasFilenameOutput;
         }
 
-        cout << "gas file will be saved to " << gasFilenameOutput << endl;
+        cout << "Gas file will be saved to " << gasFilenameOutput << endl;
 
         {
             // create empty file
@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
             ofs.close();
 
             if (!fs::exists(gasFilenameOutput)) {
-                cerr << "gas file '" << gasFilenameOutput << "' could not be created" << endl;
+                cerr << "Gas file '" << gasFilenameOutput << "' could not be created" << endl;
                 return 1;
             }
         }
@@ -185,12 +185,12 @@ int main(int argc, char** argv) {
                 if (i > 0) {
                     gas.Merge(gasFilenameOutput);
                 }
-                cout << "progress: " << i + 1 << "/" << eField.size() << endl;
+                cout << "Progress: " << i + 1 << "/" << eField.size() << endl;
                 gas.Write(gasFilenameOutput);
             }
         }
 
-        cout << "gas file saved to " << gasFilenameOutput << endl;
+        cout << "Gas file saved to " << gasFilenameOutput << endl;
 
         if (!generate->get_option("--json")->empty()) {
             // user specified to also save gas properties as json
@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
             }
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
-            cout << "gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
+            cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
             gas.WriteJson(gasPropertiesJsonFilename);
         }
 
@@ -212,10 +212,10 @@ int main(int argc, char** argv) {
             gasFilenameOutput = outputDirectory / gasFilenameOutput;
         }
 
-        cout << "gas file will be saved to " << gasFilenameOutput << endl;
+        cout << "Gas file will be saved to " << gasFilenameOutput << endl;
 
         // mergeGasInputFilenames is guaranteed to have at least 2 elements
-        cout << "merging " << mergeGasInputFilenames.size() << " gas files:" << endl;
+        cout << "Merging " << mergeGasInputFilenames.size() << " gas files:" << endl;
         for (const auto& filename: mergeGasInputFilenames) {
             cout << "    - " << filename << endl;
         }
@@ -224,32 +224,46 @@ int main(int argc, char** argv) {
             auto gas = i == 0 ? Gas(mergeGasInputFilenames[0]) : Gas(gasFilenameOutput);
 
             const auto& toMerge = mergeGasInputFilenames[i + 1];
-            cout << "merging " << toMerge << endl;
+            cout << "Merging " << toMerge << endl;
 
             if (mergeVerbose) {
-                Gas gasToMerge(toMerge);
-                cout << "electric field values (V/cm) for file to merge:";
-                for (const auto& value: gasToMerge.GetTableElectricField()) {
-                    cout << " " << value;
+                {
+                    const auto values = Gas(toMerge).GetTableElectricField();
+                    cout << "Electric field values (V/cm) for file to merge (" << values.size() << "):";
+                    for (const auto& value: values) {
+                        cout << " " << value;
+                    }
+                    cout << endl;
                 }
-                cout << endl;
 
-                cout << "electric field values (V/cm) for base file:";
-                for (const auto& value: gas.GetTableElectricField()) {
-                    cout << " " << value;
+                {
+                    const auto values = gas.GetTableElectricField();
+                    cout << "Electric field values (V/cm) for base file (" << values.size() << "):";
+                    for (const auto& value: gas.GetTableElectricField()) {
+                        cout << " " << value;
+                    }
+                    cout << endl;
                 }
-                cout << endl;
             }
 
             bool mergeOk = gas.Merge(toMerge);
             if (!mergeOk) {
-                cerr << "error merging gas files" << endl;
+                cerr << "Error merging gas files" << endl;
                 return 1;
             }
 
             gas.Write(gasFilenameOutput);
         }
 
-        cout << "gas file saved to " << gasFilenameOutput << endl;
+        if (mergeVerbose) {
+            const auto values = Gas(gasFilenameOutput).GetTableElectricField();
+            cout << "Electric field values (V/cm) for final merge file (" << values.size() << "):";
+            for (const auto& value: values) {
+                cout << " " << value;
+            }
+            cout << endl;
+        }
+
+        cout << "Gas file saved to " << gasFilenameOutput << endl;
     }
 }
