@@ -41,6 +41,5 @@ public:
     void Write(const std::string& filename) const;
     bool Merge(const std::string& gasFile, bool replaceOld = false);
 
-    std::string GetGasPropertiesJson() const;
-    void WriteJson(const std::string& filename) const;
+    std::string GetGasPropertiesJson(const std::vector<double>& electricField = {}) const;
 };

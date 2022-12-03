@@ -1,6 +1,8 @@
 
 #include "Tools.h"
 
+#include <fstream>
+
 namespace tools {
     std::string cleanNumberString(const std::string& s) {
         // "2.3000" -> "2p3", "1.0000" -> "1"
@@ -66,5 +68,11 @@ namespace tools {
         double min = *std::min_element(values.begin(), values.end());
         double max = *std::max_element(values.begin(), values.end());
         return (max - min) / 20000;
+    }
+
+    void writeToFile(const std::string& filename, const std::string& content) {
+        std::ofstream file(filename);
+        file << content;
+        file.close();
     }
 } // namespace tools

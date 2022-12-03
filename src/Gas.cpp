@@ -7,8 +7,6 @@
 #include "nlohmann/json.hpp"
 
 #include <algorithm>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -184,7 +182,7 @@ std::vector<double> Gas::GetTableElectricField() const {
     return electricField;
 }
 
-std::string Gas::GetGasPropertiesJson() const {
+std::string Gas::GetGasPropertiesJson(const std::vector<double>& electricFieldMaybeEmpty) const {
     nlohmann::json j;
 
     j["name"] = GetName();
@@ -195,7 +193,9 @@ std::string Gas::GetGasPropertiesJson() const {
     j["components"]["labels"] = components.first;
     j["components"]["fractions"] = components.second;
 
-    const auto electricField = GetTableElectricField();
+    // if electricField is empty, use the table electric field
+    const auto& electricField = electricFieldMaybeEmpty.empty() ? GetTableElectricField() : electricFieldMaybeEmpty;
+
     j["electric_field"] = electricField;
 
     vector<double> electronDriftVelocity(electricField.size());
@@ -243,10 +243,4 @@ std::string Gas::GetGasPropertiesJson() const {
 
 bool Gas::Merge(const string& gasFile, bool replaceOld) {
     return gas->MergeGasFile(gasFile, replaceOld);
-}
-
-void Gas::WriteJson(const string& filename) const {
-    std::ofstream out(filename);
-    out << GetGasPropertiesJson();
-    out.close();
 }

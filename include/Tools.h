@@ -37,4 +37,5 @@ namespace tools {
 
     double getDefaultToleranceForRemoval(const std::vector<double>& values);
 
+    void writeToFile(const std::string& filename, const std::string& content);
 } // namespace tools

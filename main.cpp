@@ -26,6 +26,8 @@ int main(int argc, char** argv) {
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
     read->add_option("-o,--output,--json", gasPropertiesJsonFilename, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     read->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save json file into")->expected(1);
+    vector<double> readGasElectricFieldValues;
+    read->add_option("--electric-field,--field,--efield,-E", readGasElectricFieldValues, "Optional electric field values (V/cm) to read properties for. Warning: if the values are not in the gas file they will be interpolated and the results may not be accurate.");
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
@@ -76,8 +78,15 @@ int main(int argc, char** argv) {
     const string subcommandName = subcommand->get_name();
     if (subcommandName == "read") {
         Gas gas(gasFilenameInput);
+
+        // if user specified electric field values, those values will be used, otherwise the gas file will be read for the electric field values
+        if (!readGasElectricFieldValues.empty()) {
+            sort(readGasElectricFieldValues.begin(), readGasElectricFieldValues.end());
+        }
+        const auto gasProperties = gas.GetGasPropertiesJson(readGasElectricFieldValues);
+
         if (read->get_option("--json")->empty()) {
-            cout << gas.GetGasPropertiesJson() << endl;
+            cout << gasProperties << endl;
         } else {
             if (gasPropertiesJsonFilename.empty()) {
                 gasPropertiesJsonFilename = string(gasFilenameInput.filename()) + ".json";
@@ -85,7 +94,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            gas.WriteJson(gasPropertiesJsonFilename);
+            tools::writeToFile(gasPropertiesJsonFilename, gasProperties);
         }
     } else if (subcommandName == "generate") {
         vector<string> gasComponentNames;
@@ -200,7 +209,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            gas.WriteJson(gasPropertiesJsonFilename);
+            tools::writeToFile(gasPropertiesJsonFilename, gas.GetGasPropertiesJson());
         }
 
         if (generatePrint) {
