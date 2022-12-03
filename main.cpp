@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            tools::writeToFile(gasPropertiesJsonFilename, gasProperties.dump(4));
+            tools::writeToFile(gasPropertiesJsonFilename, gasProperties);
         }
     } else if (subcommandName == "generate") {
         vector<string> gasComponentNames;
@@ -212,7 +212,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            tools::writeToFile(gasPropertiesJsonFilename, gas.GetGasPropertiesJson().dump(4));
+            tools::writeToFile(gasPropertiesJsonFilename, gas.GetGasPropertiesJson());
         }
 
         if (generatePrint) {
