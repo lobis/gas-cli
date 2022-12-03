@@ -14,8 +14,6 @@
 using namespace std;
 using namespace Garfield;
 
-namespace fs = std::filesystem;
-
 Gas::Gas() : gas(make_unique<MediumMagboltz>()) {}
 
 Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) {
