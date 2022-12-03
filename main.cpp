@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
             name += "-T" + tools::numberToCleanNumberString(temperature) + "C";
             name += "-P" + tools::numberToCleanNumberString(pressure) + "bar";
             name += "-nColl" + to_string(numberOfCollisions);
-            name += "-E" + tools::numberToCleanNumberString(eField.front()) + "t" + tools::numberToCleanNumberString(eField.back()) + "Vcm";
+            name += "-E" + (eField.size() == 1 ? tools::numberToCleanNumberString(eField.front()) : tools::numberToCleanNumberString(eField.front()) + "t" + tools::numberToCleanNumberString(eField.back())) + "Vcm";
             name += "-nE" + to_string(eField.size());
             if (!generateGasElectricFieldLinearOptions.empty()) {
                 unsigned int nLin = generateGasElectricFieldLinearOptions[2];
