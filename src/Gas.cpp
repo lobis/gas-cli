@@ -74,7 +74,7 @@ void Gas::Write(const string& filename) const {
 }
 
 string Gas::GetName() const {
-    // C2H6/CF4/Ne/H2O (9.99/9.99/79.92/0.1) -> Ne_79p92-C2H6_9p99-CF4_9p99-H2O_0p1
+    // C2H6/CF4/Ne/H2O (9.99/9.99/79.92/0.1) -> Ne_79.92-C2H6_9.99-CF4_9.99-H2O_0.1
     const auto components = GetComponents();
 
     string name;

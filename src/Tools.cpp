@@ -11,7 +11,6 @@ namespace tools {
         string result(s);
         result = regex_replace(result, regex("[0]+$"), "");   // remove trailing zeros
         result = regex_replace(result, regex("[\\.]+$"), ""); // remove trailing '.' (if zeros have been removed)
-        result = regex_replace(result, regex("\\."), "p");    // replace '.' by 'p'
         return result;
     }
 
