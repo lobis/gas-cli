@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
 
     const string subcommandName = subcommand->get_name();
     if (subcommandName == "read") {
+        cout << "Reading gas properties from file: " << gasFilenameInput << endl;
         Gas gas(gasFilenameInput);
 
         // if user specified electric field values, those values will be used, otherwise the gas file will be read for the electric field values
@@ -87,8 +88,8 @@ int main(int argc, char** argv) {
 
         if (read->get_option("--json")->empty()) {
             // print electric field info
-            const auto& eFieldValues = gasProperties["electricFieldValues"];
-            cout << "Number of electric field values: " << eFieldValues.size() << endl;
+            // const auto& eFieldValues = gasProperties["electricFieldValues"];
+            // cout << "Number of electric field values: " << eFieldValues.size() << endl;
             cout << gasProperties.dump(4) << endl;
         } else {
             if (gasPropertiesJsonFilename.empty()) {
