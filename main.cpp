@@ -214,7 +214,26 @@ int main(int argc, char** argv) {
 
         cout << "Gas file will be saved to " << gasFilenameOutput << endl;
 
-        // mergeGasInputFilenames is guaranteed to have at least 2 elements
+        // check if any file is empty and remove them
+        {
+            vector<fs::path> emptyGasFiles;
+            for (const auto& filename: mergeGasInputFilenames) {
+                if (fs::is_empty(filename)) {
+                    emptyGasFiles.push_back(filename);
+                }
+            }
+            // remove all empty files
+            for (const auto& filename: emptyGasFiles) {
+                cout << "Warning: Gas file '" << filename << "' is empty and will be ignored" << endl;
+                mergeGasInputFilenames.erase(std::remove(mergeGasInputFilenames.begin(), mergeGasInputFilenames.end(), filename), mergeGasInputFilenames.end());
+            }
+
+            if (mergeGasInputFilenames.size() < 2) {
+                cerr << "At least two gas files are required for merging" << endl;
+                return 1;
+            }
+        }
+
         cout << "Merging " << mergeGasInputFilenames.size() << " gas files:" << endl;
         for (const auto& filename: mergeGasInputFilenames) {
             cout << "    - " << filename << endl;
