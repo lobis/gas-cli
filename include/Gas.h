@@ -23,25 +23,25 @@ public:
 
     std::pair<std::vector<std::string>, std::vector<double>> GetComponents() const;
 
-    // Temperature in Celsius
+    /// Temperature in Celsius
     double GetTemperature() const;
-    // Pressure in bar
+    /// Pressure in bar
     double GetPressure() const;
-    // Electric field in V/cm
+    /// Electric field in V/cm
     std::vector<double> GetTableElectricField() const;
     inline std::vector<double> GetElectricFieldValues() const { return GetTableElectricField(); }
 
-    // Drift velocity in cm/us
+    /// Drift velocity in cm/us
     double GetElectronDriftVelocity(double electricField) const;
 
-    // Diffusion in cm^0.5 (more details in https://root-forum.cern.ch/t/unit-of-diffusion-coefficients-not-clear/45671)
+    /// Diffusion in cm^(1/2) (more details in https://root-forum.cern.ch/t/unit-of-diffusion-coefficients-not-clear/45671)
     std::pair<double, double> GetElectronDiffusion(double electricField) const;
     double GetElectronTransversalDiffusion(double electricField) const;
     double GetElectronLongitudinalDiffusion(double electricField) const;
 
-    // Townsend coefficient (no dimension)
+    /// Townsend coefficient (cm-1)
     double GetElectronTownsend(double electricField) const;
-
+    /// Attachment coefficient (cm-1)
     double GetElectronAttachment(double electricField) const;
 
     void SetPressure(double pressureInBar);

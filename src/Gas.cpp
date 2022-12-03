@@ -136,7 +136,7 @@ void Gas::SetTemperature(double temperatureInCelsius) {
 }
 
 double Gas::GetElectronDriftVelocity(double electricField) const {
-    // returns electron drift velocity in cm/us (garfield unit is mm/us)
+    // returns electron drift velocity in cm/us (garfield unit is cm/ns)
     double vx, vy, vz;
     gas->ElectronVelocity(0, 0, -electricField, 0, 0, 0, vx, vy, vz);
     return vz * 1.E3;
