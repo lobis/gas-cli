@@ -25,7 +25,7 @@ Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) {
 
 Gas::Gas(const vector<string>& _components,
          const vector<double>& _fractions) {
-    vector<std::string> components = _components;
+    vector<string> components = _components;
     vector<double> fractions = _fractions;
 
     if (components.empty()) {
@@ -78,7 +78,7 @@ void Gas::Write(const string& filename) const {
     gas->WriteGasFile(filename);
 }
 
-std::string Gas::GetName() const {
+string Gas::GetName() const {
     // C2H6/CF4/Ne/H2O (9.99/9.99/79.92/0.1) -> Ne_79p92-C2H6_9p99-CF4_9p99-H2O_0p1
     const auto components = GetComponents();
 
@@ -93,13 +93,13 @@ std::string Gas::GetName() const {
     return name;
 }
 
-std::string Gas::GetGarfieldName() const {
+string Gas::GetGarfieldName() const {
     return gas->GetName();
 }
 
-std::pair<std::vector<std::string>, std::vector<double>> Gas::GetComponents() const {
+pair<vector<string>, vector<double>> Gas::GetComponents() const {
 
-    std::vector<std::pair<std::string, double>> components(gas->GetNumberOfComponents());
+    vector<pair<string, double>> components(gas->GetNumberOfComponents());
     for (unsigned int i = 0; i < components.size(); i++) {
         gas->GetComponent(i, components[i].first, components[i].second);
     }
@@ -113,8 +113,8 @@ std::pair<std::vector<std::string>, std::vector<double>> Gas::GetComponents() co
         return left.second > right.second;
     });
 
-    std::vector<std::string> names(gas->GetNumberOfComponents());
-    std::vector<double> fractions(gas->GetNumberOfComponents());
+    vector<string> names(gas->GetNumberOfComponents());
+    vector<double> fractions(gas->GetNumberOfComponents());
     for (unsigned int i = 0; i < components.size(); i++) {
         names[i] = components[i].first;
         fractions[i] = components[i].second;
@@ -172,7 +172,7 @@ double Gas::GetElectronAttachment(double electricField) const {
     return attachment;
 }
 
-std::vector<double> Gas::GetTableElectricField() const {
+vector<double> Gas::GetTableElectricField() const {
     vector<double> electricField, magneticField, angle;
     gas->GetFieldGrid(electricField, magneticField, angle);
     // sort electric field in case it's not ordered
@@ -180,7 +180,7 @@ std::vector<double> Gas::GetTableElectricField() const {
     return electricField;
 }
 
-nlohmann::json Gas::GetGasPropertiesJson(const std::vector<double>& electricFieldMaybeEmpty) const {
+nlohmann::json Gas::GetGasPropertiesJson(const vector<double>& electricFieldMaybeEmpty) const {
     nlohmann::json j;
 
     j["name"] = GetName();
@@ -197,42 +197,42 @@ nlohmann::json Gas::GetGasPropertiesJson(const std::vector<double>& electricFiel
     j["electric_field"] = electricField;
 
     vector<double> electronDriftVelocity(electricField.size());
-    std::transform(electricField.begin(), electricField.end(),
-                   electronDriftVelocity.begin(),
-                   [this](double e) { return GetElectronDriftVelocity(e); });
-    if (std::any_of(electronDriftVelocity.begin(), electronDriftVelocity.end(), [](double e) { return e != 0; })) {
+    transform(electricField.begin(), electricField.end(),
+              electronDriftVelocity.begin(),
+              [this](double e) { return GetElectronDriftVelocity(e); });
+    if (any_of(electronDriftVelocity.begin(), electronDriftVelocity.end(), [](double e) { return e != 0; })) {
         j["electron_drift_velocity"] = electronDriftVelocity;
     }
 
     vector<double> electronTransversalDiffusion(electricField.size());
-    std::transform(electricField.begin(), electricField.end(),
-                   electronTransversalDiffusion.begin(),
-                   [this](double e) { return GetElectronTransversalDiffusion(e); });
-    if (std::any_of(electronTransversalDiffusion.begin(), electronTransversalDiffusion.end(), [](double e) { return e != 0; })) {
+    transform(electricField.begin(), electricField.end(),
+              electronTransversalDiffusion.begin(),
+              [this](double e) { return GetElectronTransversalDiffusion(e); });
+    if (any_of(electronTransversalDiffusion.begin(), electronTransversalDiffusion.end(), [](double e) { return e != 0; })) {
         j["electron_transversal_diffusion"] = electronTransversalDiffusion;
     }
 
     vector<double> electronLongitudinalDiffusion(electricField.size());
-    std::transform(electricField.begin(), electricField.end(),
-                   electronLongitudinalDiffusion.begin(),
-                   [this](double e) { return GetElectronLongitudinalDiffusion(e); });
-    if (std::any_of(electronLongitudinalDiffusion.begin(), electronLongitudinalDiffusion.end(), [](double e) { return e != 0; })) {
+    transform(electricField.begin(), electricField.end(),
+              electronLongitudinalDiffusion.begin(),
+              [this](double e) { return GetElectronLongitudinalDiffusion(e); });
+    if (any_of(electronLongitudinalDiffusion.begin(), electronLongitudinalDiffusion.end(), [](double e) { return e != 0; })) {
         j["electron_longitudinal_diffusion"] = electronLongitudinalDiffusion;
     }
 
     vector<double> electronTownsend(electricField.size());
-    std::transform(electricField.begin(), electricField.end(),
-                   electronTownsend.begin(),
-                   [this](double e) { return GetElectronTownsend(e); });
-    if (std::any_of(electronTownsend.begin(), electronTownsend.end(), [](double e) { return e != 0; })) {
+    transform(electricField.begin(), electricField.end(),
+              electronTownsend.begin(),
+              [this](double e) { return GetElectronTownsend(e); });
+    if (any_of(electronTownsend.begin(), electronTownsend.end(), [](double e) { return e != 0; })) {
         j["electron_townsend"] = electronTownsend;
     }
 
     vector<double> electronAttachment(electricField.size());
-    std::transform(electricField.begin(), electricField.end(),
-                   electronAttachment.begin(),
-                   [this](double e) { return GetElectronAttachment(e); });
-    if (std::any_of(electronAttachment.begin(), electronAttachment.end(), [](double e) { return e != 0; })) {
+    transform(electricField.begin(), electricField.end(),
+              electronAttachment.begin(),
+              [this](double e) { return GetElectronAttachment(e); });
+    if (any_of(electronAttachment.begin(), electronAttachment.end(), [](double e) { return e != 0; })) {
         j["electron_attachment"] = electronAttachment;
     }
 

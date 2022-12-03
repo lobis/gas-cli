@@ -3,25 +3,27 @@
 
 #include <fstream>
 
+using namespace std;
+
 namespace tools {
-    std::string cleanNumberString(const std::string& s) {
+    string cleanNumberString(const string& s) {
         // "2.3000" -> "2p3", "1.0000" -> "1"
-        std::string result(s);
-        result = std::regex_replace(result, std::regex("[0]+$"), "");   // remove trailing zeros
-        result = std::regex_replace(result, std::regex("[\\.]+$"), ""); // remove trailing '.' (if zeros have been removed)
-        result = std::regex_replace(result, std::regex("\\."), "p");    // replace '.' by 'p'
+        string result(s);
+        result = regex_replace(result, regex("[0]+$"), "");   // remove trailing zeros
+        result = regex_replace(result, regex("[\\.]+$"), ""); // remove trailing '.' (if zeros have been removed)
+        result = regex_replace(result, regex("\\."), "p");    // replace '.' by 'p'
         return result;
     }
 
-    std::string numberToCleanNumberString(double d) {
-        return cleanNumberString(std::to_string(round(d * 1000) / 1000));
+    string numberToCleanNumberString(double d) {
+        return cleanNumberString(to_string(round(d * 1000) / 1000));
     }
 
-    void sortVectorForCompute(std::vector<double>& values) {
-        std::sort(values.begin(), values.end());
-        values.erase(std::unique(values.begin(), values.end()), values.end());
+    void sortVectorForCompute(vector<double>& values) {
+        sort(values.begin(), values.end());
+        values.erase(unique(values.begin(), values.end()), values.end());
 
-        std::vector<double> toProcess(values);
+        vector<double> toProcess(values);
         values.clear();
 
         while (!toProcess.empty()) {
@@ -29,10 +31,10 @@ namespace tools {
             double minDistanceMax = 0;
             unsigned int minDistanceRepeatMax = 0;
             for (unsigned int i = 0; i < toProcess.size(); i++) {
-                double minDistance = std::numeric_limits<double>::max();
+                double minDistance = numeric_limits<double>::max();
                 unsigned int minDistanceRepeat = 0;
                 for (const auto& valueProcessed: values) {
-                    double diff = std::abs(toProcess[i] - valueProcessed);
+                    double diff = abs(toProcess[i] - valueProcessed);
                     if (diff < minDistance) {
                         minDistance = diff;
                     }
@@ -52,26 +54,26 @@ namespace tools {
         }
     }
 
-    void removeSimilarElements(std::vector<double>& values, double absoluteTolerance) {
-        std::sort(values.begin(), values.end());
+    void removeSimilarElements(vector<double>& values, double absoluteTolerance) {
+        sort(values.begin(), values.end());
 
         auto similar = [&absoluteTolerance](double a, double b) {
-            return std::abs(a - b) <= absoluteTolerance;
+            return abs(a - b) <= absoluteTolerance;
         };
 
-        values.erase(std::unique(values.begin(), values.end(), similar), values.end());
+        values.erase(unique(values.begin(), values.end(), similar), values.end());
 
-        std::sort(values.begin(), values.end());
+        sort(values.begin(), values.end());
     }
 
-    double getDefaultToleranceForRemoval(const std::vector<double>& values) {
-        double min = *std::min_element(values.begin(), values.end());
-        double max = *std::max_element(values.begin(), values.end());
+    double getDefaultToleranceForRemoval(const vector<double>& values) {
+        double min = *min_element(values.begin(), values.end());
+        double max = *max_element(values.begin(), values.end());
         return (max - min) / 20000;
     }
 
-    void writeToFile(const std::string& filename, const std::string& content) {
-        std::ofstream file(filename);
+    void writeToFile(const string& filename, const string& content) {
+        ofstream file(filename);
         file << content;
         file.close();
     }
