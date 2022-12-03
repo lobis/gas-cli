@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     unsigned int numberOfCollisions = 10;
     generate->add_option("--collisions,--ncoll,--nColl", numberOfCollisions, "Number of collisions to simulate (defaults to 10)");
     bool generateVerbose = false;
-    generate->add_flag("--verbose", generateVerbose, "Garfield verbosity");
+    generate->add_flag("-v,--verbose", generateVerbose, "Garfield verbosity");
     bool generateProgress = true;
     generate->add_flag("--progress,!--no-progress", generateProgress, "Save progress periodically to output file (defaults to true)");
     bool generatePrint = false;
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     merge->add_option("-i,--input", mergeGasInputFilenames, "Garfield gas file (.gas) to merge into the output. In case of overlaps, first file of list will take precedence")->required()->expected(2, numeric_limits<int>::max());
     merge->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save merged gas file into")->expected(1);
     bool mergeVerbose = false;
-    merge->add_flag("--verbose", mergeVerbose, "Merge verbosity");
+    merge->add_flag("-v,--verbose", mergeVerbose, "Merge verbosity");
 
     app.require_subcommand(1);
 
