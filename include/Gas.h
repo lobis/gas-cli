@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Garfield/MediumMagboltz.hh"
+#include "nlohmann/json.hpp"
 
 class Gas {
 
@@ -41,5 +42,5 @@ public:
     void Write(const std::string& filename) const;
     bool Merge(const std::string& gasFile, bool replaceOld = false);
 
-    std::string GetGasPropertiesJson(const std::vector<double>& electricField = {}) const;
+    nlohmann::json GetGasPropertiesJson(const std::vector<double>& electricField = {}) const;
 };

@@ -180,7 +180,7 @@ std::vector<double> Gas::GetTableElectricField() const {
     return electricField;
 }
 
-std::string Gas::GetGasPropertiesJson(const std::vector<double>& electricFieldMaybeEmpty) const {
+nlohmann::json Gas::GetGasPropertiesJson(const std::vector<double>& electricFieldMaybeEmpty) const {
     nlohmann::json j;
 
     j["name"] = GetName();
@@ -236,7 +236,7 @@ std::string Gas::GetGasPropertiesJson(const std::vector<double>& electricFieldMa
         j["electron_attachment"] = electronAttachment;
     }
 
-    return j.dump(4);
+    return j;
 }
 
 bool Gas::Merge(const string& gasFile, bool replaceOld) {

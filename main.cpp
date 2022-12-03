@@ -86,7 +86,10 @@ int main(int argc, char** argv) {
         const auto gasProperties = gas.GetGasPropertiesJson(readGasElectricFieldValues);
 
         if (read->get_option("--json")->empty()) {
-            cout << gasProperties << endl;
+            // print electric field info
+            const auto& eFieldValues = gasProperties["electricFieldValues"];
+            cout << "Number of electric field values: " << eFieldValues.size() << endl;
+            cout << gasProperties.dump(4) << endl;
         } else {
             if (gasPropertiesJsonFilename.empty()) {
                 gasPropertiesJsonFilename = string(gasFilenameInput.filename()) + ".json";
@@ -94,7 +97,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            tools::writeToFile(gasPropertiesJsonFilename, gasProperties);
+            tools::writeToFile(gasPropertiesJsonFilename, gasProperties.dump(4));
         }
     } else if (subcommandName == "generate") {
         vector<string> gasComponentNames;
@@ -209,7 +212,7 @@ int main(int argc, char** argv) {
             gasPropertiesJsonFilename = outputDirectory / gasPropertiesJsonFilename;
 
             cout << "Gas properties json will be saved to " << gasPropertiesJsonFilename << endl;
-            tools::writeToFile(gasPropertiesJsonFilename, gas.GetGasPropertiesJson());
+            tools::writeToFile(gasPropertiesJsonFilename, gas.GetGasPropertiesJson().dump(4));
         }
 
         if (generatePrint) {

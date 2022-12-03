@@ -71,8 +71,8 @@ FetchContent_MakeAvailable(cli11)
 
 target_link_libraries(
         ${EXECUTABLE_NAME}
-        PUBLIC Garfield::Garfield
-        PRIVATE nlohmann_json::nlohmann_json CLI11::CLI11
+        PUBLIC Garfield::Garfield nlohmann_json::nlohmann_json
+        PRIVATE CLI11::CLI11
 )
 
 install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
