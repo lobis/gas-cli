@@ -16,8 +16,7 @@ protected:
 public:
     Gas();
     Gas(const std::string& gasFilepath);
-    Gas(const std::vector<std::string>& components,
-        const std::vector<double>& fractions);
+    Gas(std::vector<std::pair<std::string, double>> components);
 
     std::string GetName() const;
     std::string GetGarfieldName() const;

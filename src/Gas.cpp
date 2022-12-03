@@ -23,43 +23,38 @@ Gas::Gas(const string& gasFilepath) : gas(make_unique<MediumMagboltz>()) {
     }
 }
 
-Gas::Gas(const vector<string>& _components,
-         const vector<double>& _fractions) {
-    vector<string> components = _components;
-    vector<double> fractions = _fractions;
+Gas::Gas(std::vector<std::pair<std::string, double>> components) {
 
     if (components.empty()) {
-        cerr << "cannot initialize gas with empty components" << endl;
-        exit(1);
-    }
-    if (!components.empty() && fractions.size() == components.size() - 1) {
-        double sum = 0;
-        for (const auto& value: fractions) { sum += value; }
-        fractions.emplace_back(100.0 - sum);
-    }
-    if (components.size() != fractions.size()) {
-        cerr << "number of component names and fractions mismatch" << endl;
+        cerr << "Error: cannot initialize gas with empty components" << endl;
         exit(1);
     }
 
-    // TODO: Throw when negative number as fraction, remove elements when fraction is zero
-    const unsigned int componentsLimit = 6;
+    constexpr unsigned int componentsLimit = 6;
     if (components.size() > componentsLimit) {
-        cerr << "cannot initialize gas more than 6 components" << endl;
+        cerr << "Error: cannot initialize gas more than 6 components" << endl;
         exit(1);
     }
+
+    // sort components by fraction
+    sort(components.begin(), components.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
 
     double fractionSum = 0;
-    for (const auto& value: fractions) { fractionSum += value; }
-    // normalize so the sum is 1
-    for (auto& value: fractions) { value /= fractionSum; }
+    for (const auto& [name, fraction]: components) { fractionSum += fraction; }
+    // normalize by total fraction
+    for (auto& [name, fraction]: components) { fraction /= fractionSum; }
 
-    while (components.size() < componentsLimit) {
-        components.emplace_back("");
-        fractions.emplace_back(0);
+    // add empty components to match size of componentsLimit
+    for (int i = components.size(); i < componentsLimit; i++) {
+        components.emplace_back("", 0);
     }
 
-    gas = make_unique<MediumMagboltz>(components[0], fractions[0], components[1], fractions[1], components[2], fractions[2], components[3], fractions[3], components[4], fractions[4], components[5], fractions[5]);
+    gas = make_unique<MediumMagboltz>(components[0].first, components[0].second,
+                                      components[1].first, components[1].second,
+                                      components[2].first, components[2].second,
+                                      components[3].first, components[3].second,
+                                      components[4].first, components[4].second,
+                                      components[5].first, components[5].second);
 }
 
 void Gas::Generate(vector<double> electricFieldValues, unsigned int numberOfCollisions, bool verbose) {

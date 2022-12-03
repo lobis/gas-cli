@@ -103,21 +103,54 @@ int main(int argc, char** argv) {
             tools::writeToFile(gasPropertiesJsonFilename, gasProperties.dump());
         }
     } else if (subcommandName == "generate") {
-        vector<string> gasComponentNames;
-        vector<double> gasComponentFractions;
+        vector<pair<string, double>> gasComponents;
+        {
+            vector<string> components;
+            vector<double> fractions;
 
-        regex rgx("^[0-9]+([.][0-9]+)?"); // only positive (decimal) numbers
-        for (const auto& componentString: generateGasComponentsString) {
-            std::smatch matches;
-            if (std::regex_search(componentString, matches, rgx)) {
-                gasComponentFractions.push_back(stod(componentString));
-            } else {
-                gasComponentNames.push_back(componentString);
+            regex rgx("^[0-9]+([.][0-9]+)?"); // only positive (decimal) numbers
+            for (const auto& componentString: generateGasComponentsString) {
+                std::smatch matches;
+                if (std::regex_search(componentString, matches, rgx)) {
+                    fractions.push_back(stod(componentString));
+                } else {
+                    components.push_back(componentString);
+                }
+            }
+
+            if (!components.empty() && fractions.size() == components.size() - 1) {
+                double sum = 0;
+                for (const auto& value: fractions) { sum += value; }
+                const double inferredPercentage = 100.0 - sum;
+                fractions.emplace_back(inferredPercentage);
+                cout << "Warning: Inferred fraction of " << inferredPercentage << "% for component " << components.back() << endl;
+            }
+
+            if (components.size() != fractions.size()) {
+                cerr << "Error parsing components: number of component names and fractions mismatch" << endl;
+                exit(1);
+            }
+
+            // do not allow negative fractions
+            for (int i = 0; i < fractions.size(); ++i) {
+                if (fractions[i] < 0) {
+                    cerr << "Error: Fraction of component " << components[i] << " cannot be negative: " << fractions[i] << endl;
+                    exit(1);
+                }
+            }
+
+            for (size_t i = 0; i < components.size(); ++i) {
+                // if component fraction is zero, do not add it to the gas
+                if (fractions[i] == 0) {
+                    cout << "Warning: Component " << components[i] << " has zero fraction, will not be added to gas" << endl;
+                    continue;
+                }
+                gasComponents.emplace_back(components[i], fractions[i]);
             }
         }
 
         // validation is handled in constructor
-        Gas gas(gasComponentNames, gasComponentFractions);
+        Gas gas(gasComponents);
 
         gas.SetPressure(pressure);
         gas.SetTemperature(temperature);
