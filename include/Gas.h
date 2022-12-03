@@ -31,7 +31,7 @@ public:
     std::vector<double> GetTableElectricField() const;
     inline std::vector<double> GetElectricFieldValues() const { return GetTableElectricField(); }
 
-    // Drift velocity in cm/us
+    // Drift velocity in mm/us
     double GetElectronDriftVelocity(double electricField) const;
 
     // Diffusion in cm^0.5 (more details in https://root-forum.cern.ch/t/unit-of-diffusion-coefficients-not-clear/45671)
