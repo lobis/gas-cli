@@ -37,20 +37,14 @@ else ()
 endif ()
 
 # nlohmann json
-find_package(nlohmann_json QUIET)
-if (NOT nlohmann_json_FOUND)
-    set(nlohmann_json_GIT_ID v3.11.2)
-    message(STATUS "nlohmann_json not found. nlohmann_json will be built from source (Git ID ${nlohmann_json_GIT_ID})")
-    include(FetchContent)
-    FetchContent_Declare(
-            nlohmann_json
-            GIT_REPOSITORY https://github.com/nlohmann/json.git
-            GIT_TAG ${nlohmann_json_GIT_ID}
-    )
-    FetchContent_MakeAvailable(nlohmann_json)
-else ()
-    message(STATUS "nlohmann_json found")
-endif ()
+set(nlohmann_json_GIT_ID v3.11.2)
+include(FetchContent)
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG ${nlohmann_json_GIT_ID}
+)
+FetchContent_MakeAvailable(nlohmann_json)
 
 add_executable(
         ${EXECUTABLE_NAME}
