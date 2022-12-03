@@ -52,6 +52,8 @@ int main(int argc, char** argv) {
     generate->add_option("--electric-field-linear,--electric-field-lin,--field-lin,--efield-lin,--E-lin", generateGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
     vector<double> generateGasElectricFieldLogOptions;
     generate->add_option("--electric-field-log,--electric-field-log,--field-log,--efield-log,--E-log", generateGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
+    bool generateTestOnly = false;
+    generate->add_flag("--test", generateTestOnly, "Do not run generation (used to test input parameters)");
 
     CLI::App* merge = app.add_subcommand("merge", "Merge multiple Garfield gas files into one");
     merge->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into")->required();
@@ -175,6 +177,11 @@ int main(int argc, char** argv) {
         }
 
         cout << "Gas file will be saved to " << gasFilenameOutput << endl;
+
+        if (generateTestOnly) {
+            cout << "Test only, no gas file will be generated" << endl;
+            return 0;
+        }
 
         {
             // create empty file
