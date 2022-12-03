@@ -22,16 +22,26 @@ public:
     std::string GetGarfieldName() const;
 
     std::pair<std::vector<std::string>, std::vector<double>> GetComponents() const;
+
+    // Temperature in Celsius
     double GetTemperature() const;
+    // Pressure in bar
     double GetPressure() const;
+    // Electric field in V/cm
     std::vector<double> GetTableElectricField() const;
     inline std::vector<double> GetElectricFieldValues() const { return GetTableElectricField(); }
 
+    // Drift velocity in cm/us
     double GetElectronDriftVelocity(double electricField) const;
+
+    // Diffusion in cm^0.5 (more details in https://root-forum.cern.ch/t/unit-of-diffusion-coefficients-not-clear/45671)
     std::pair<double, double> GetElectronDiffusion(double electricField) const;
     double GetElectronTransversalDiffusion(double electricField) const;
     double GetElectronLongitudinalDiffusion(double electricField) const;
+
+    // Townsend coefficient (no dimension)
     double GetElectronTownsend(double electricField) const;
+
     double GetElectronAttachment(double electricField) const;
 
     void SetPressure(double pressureInBar);
