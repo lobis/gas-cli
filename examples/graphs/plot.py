@@ -21,7 +21,8 @@ x = data["electric_field"]
 drift_velocity = data["electron_drift_velocity"]
 diffusion_transversal = data["electron_transversal_diffusion"]
 diffusion_longitudinal = data["electron_longitudinal_diffusion"]
-electron_townsend = data["electron_townsend"]
+electron_townsend = data.get("electron_townsend", np.zeros(len(x)))
+electron_attachment = data.get("electron_attachment", np.zeros(len(x)))
 
 fig, axs = plt.subplots(2, 2)
 
