@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     generate->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save gas file into")->expected(1);
     generate->add_option("--json", gasPropertiesJsonFilename, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     vector<string> generateGasComponentsString;
-    generate->add_option("--components", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
+    generate->add_option("--components,--mixture", generateGasComponentsString, "Garfield gas components to use in the gas file. It should be of the form of 'component1', 'fraction1', 'component2', 'fraction2', ... up to 6 components")->required()->expected(1, 12);
     double pressure = 1.0, temperature = 20.0;
     generate->add_option("--pressure", pressure, "Gas pressure in bar");
     generate->add_option("--temperature,--temp", temperature, "Gas temperature in Celsius");
