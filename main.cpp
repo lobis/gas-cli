@@ -88,8 +88,8 @@ int main(int argc, char** argv) {
 
         if (read->get_option("--json")->empty()) {
             // print electric field info
-            // const auto& eFieldValues = gasProperties["electricFieldValues"];
-            // cout << "Number of electric field values: " << eFieldValues.size() << endl;
+            const auto& eFieldValues = gasProperties["electric_field"];
+            cout << "Number of electric field values: " << eFieldValues.size() << endl;
             cout << gasProperties.dump(4) << endl;
         } else {
             if (gasPropertiesJsonFilename.empty()) {
