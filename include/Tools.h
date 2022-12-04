@@ -38,4 +38,7 @@ namespace tools {
     double getDefaultToleranceForRemoval(const std::vector<double>& values);
 
     void writeToFile(const std::string& filename, const std::string& content);
+
+    /// Compress files using tar (tar needs to be available to work)
+    void tar(const std::string& filename, const std::vector<std::string>& files);
 } // namespace tools

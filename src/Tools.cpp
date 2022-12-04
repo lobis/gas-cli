@@ -76,4 +76,14 @@ namespace tools {
         file << content;
         file.close();
     }
+
+    void tar(const std::string& filename, const std::vector<std::string>& files) {
+        string command = "tar -czf " + filename;
+        for (const auto& file: files) {
+            command += " " + file;
+        }
+        cout << "Executing command: " << command << endl;
+        system(command.c_str());
+    }
+
 } // namespace tools

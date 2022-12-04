@@ -62,6 +62,8 @@ int main(int argc, char** argv) {
     merge->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save merged gas file into")->expected(1);
     bool mergeVerbose = false;
     merge->add_flag("-v,--verbose", mergeVerbose, "Merge verbosity");
+    bool mergeCompressOutput = false;
+    merge->add_flag("--tar,--compress", mergeCompressOutput, "Compress output gas file using tar");
 
     app.require_subcommand(1);
 
@@ -337,5 +339,11 @@ int main(int argc, char** argv) {
         }
 
         cout << "Gas file saved to " << gasFilenameOutput << endl;
+
+        if (mergeCompressOutput) {
+            const fs::path gasFilenameOutputTar = gasFilenameOutput.string() + ".tar.gz";
+            cout << "Compressing gas file to " << gasFilenameOutputTar << endl;
+            tools::tar(gasFilenameOutputTar, {gasFilenameOutput});
+        }
     }
 }
