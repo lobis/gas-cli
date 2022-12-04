@@ -294,10 +294,9 @@ int main(int argc, char** argv) {
             cout << "    - " << filename << endl;
         }
 
-        for (unsigned int i = 0; i < mergeGasInputFilenames.size() - 1; i++) {
-            auto gas = i == 0 ? Gas(mergeGasInputFilenames[0]) : Gas(gasFilenameOutput);
-
-            const auto& toMerge = mergeGasInputFilenames[i + 1];
+        auto gas = Gas(mergeGasInputFilenames[0]);
+        for (unsigned int i = 1; i < mergeGasInputFilenames.size(); i++) {
+            const auto& toMerge = mergeGasInputFilenames[i];
             cout << "Merging " << toMerge << endl;
 
             if (mergeVerbose) {
@@ -325,12 +324,12 @@ int main(int argc, char** argv) {
                 cerr << "Error merging gas files" << endl;
                 return 1;
             }
-
-            gas.Write(gasFilenameOutput);
         }
 
+        gas.Write(gasFilenameOutput);
+
         if (mergeVerbose) {
-            const auto values = Gas(gasFilenameOutput).GetTableElectricField();
+            const auto values = gas.GetTableElectricField();
             cout << "Electric field values (V/cm) for final merge file (" << values.size() << "):";
             for (const auto& value: values) {
                 cout << " " << value;
