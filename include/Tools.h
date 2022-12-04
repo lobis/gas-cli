@@ -27,6 +27,7 @@ namespace tools {
         return result;
     }
 
+    /// Remove trailing zeros and trailing '.' from a string representation of a number ("2.3000" -> "2.3", "1.0000" -> "1", etc.)
     std::string cleanNumberString(const std::string& s);
 
     std::string numberToCleanNumberString(double d);
@@ -37,6 +38,7 @@ namespace tools {
 
     double getDefaultToleranceForRemoval(const std::vector<double>& values);
 
+    /// Write contents (string) to file
     void writeToFile(const std::string& filename, const std::string& content);
 
     /// Compress files using tar (tar needs to be available to work)

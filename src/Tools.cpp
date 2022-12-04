@@ -7,7 +7,7 @@ using namespace std;
 
 namespace tools {
     string cleanNumberString(const string& s) {
-        // "2.3000" -> "2p3", "1.0000" -> "1"
+        // "2.3000" -> "2.3", "1.0000" -> "1"
         string result(s);
         result = regex_replace(result, regex("[0]+$"), "");   // remove trailing zeros
         result = regex_replace(result, regex("[\\.]+$"), ""); // remove trailing '.' (if zeros have been removed)
@@ -82,7 +82,6 @@ namespace tools {
         for (const auto& file: files) {
             command += " " + file;
         }
-        cout << "Executing command: " << command << endl;
         system(command.c_str());
     }
 
