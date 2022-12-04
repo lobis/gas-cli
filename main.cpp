@@ -342,7 +342,12 @@ int main(int argc, char** argv) {
         if (mergeCompressOutput) {
             const fs::path gasFilenameOutputTar = gasFilenameOutput.string() + ".tar.gz";
             cout << "Compressing gas file to " << gasFilenameOutputTar << endl;
-            tools::tar(gasFilenameOutputTar, {gasFilenameOutput});
+            // change into output directory to avoid absolute paths in tar
+            const auto currentPath = fs::current_path();
+            fs::current_path(gasFilenameOutput.parent_path());
+            tools::tar(gasFilenameOutputTar, {gasFilenameOutput.filename()});
+            // return to original path
+            fs::current_path(currentPath);
         }
     }
 }
