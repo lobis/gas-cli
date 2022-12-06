@@ -201,7 +201,7 @@ nlohmann::json Gas::GetGasPropertiesJson(const vector<double>& electricFieldMayb
             if (e >= min - eps && e <= max + eps) {
                 electricField.push_back(e);
             } else {
-                cout << "Warning: electric field value '" << e << "' is outside the range of the gas table (" << min << ", " << max << ")" << endl;
+                cerr << "Warning: electric field value '" << e << "' is outside the range of the gas table (" << min << ", " << max << ")" << endl;
             }
         }
         tools::removeSimilarElements(electricField);

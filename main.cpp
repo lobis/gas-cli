@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
                 for (const auto& value: fractions) { sum += value; }
                 const double inferredPercentage = 100.0 - sum;
                 fractions.emplace_back(inferredPercentage);
-                cout << "Warning: Inferred fraction of " << inferredPercentage << "% for component " << components.back() << endl;
+                cerr << "Warning: Inferred fraction of " << inferredPercentage << "% for component " << components.back() << endl;
             }
 
             if (components.size() != fractions.size()) {
@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
             for (size_t i = 0; i < components.size(); ++i) {
                 // if component fraction is zero, do not add it to the gas
                 if (fractions[i] == 0) {
-                    cout << "Warning: Component " << components[i] << " has zero fraction, will not be added to gas" << endl;
+                    cerr << "Warning: Component " << components[i] << " has zero fraction, will not be added to gas" << endl;
                     continue;
                 }
                 gasComponents.emplace_back(components[i], fractions[i]);
@@ -282,7 +282,7 @@ int main(int argc, char** argv) {
             }
             // remove all empty files
             for (const auto& filename: emptyGasFiles) {
-                cout << "Warning: Gas file '" << filename << "' is empty and will be ignored" << endl;
+                cerr << "Warning: Gas file '" << filename << "' is empty and will be ignored" << endl;
                 mergeGasInputFilenames.erase(std::remove(mergeGasInputFilenames.begin(), mergeGasInputFilenames.end(), filename), mergeGasInputFilenames.end());
             }
 
