@@ -34,7 +34,9 @@ namespace tools {
 
     void sortVectorForCompute(std::vector<double>& values);
 
-    void removeSimilarElements(std::vector<double>& values, double absoluteTolerance = 0.05);
+    void removeSimilarElements(std::vector<double>& values, double eps = 1E-3);
+
+    bool similar(double a, double b, double eps = 1E-3);
 
     double getDefaultToleranceForRemoval(const std::vector<double>& values);
 

@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
             eField.insert(eField.end(), electricFieldLog.begin(), electricFieldLog.end());
         }
         if (!eField.empty()) {
-            tools::removeSimilarElements(eField, tools::getDefaultToleranceForRemoval(eField));
             sort(eField.begin(), eField.end());
             cout << "Electric field values (V/cm):";
             for (const auto& e: eField) {
@@ -172,6 +171,7 @@ int main(int argc, char** argv) {
             }
         }
 
+        tools::removeSimilarElements(eField);
         if (eField.empty()) {
             cerr << "No electric field values provided (--help)" << endl;
             return 1;

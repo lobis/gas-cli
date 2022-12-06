@@ -53,14 +53,21 @@ namespace tools {
         }
     }
 
-    void removeSimilarElements(vector<double>& values, double absoluteTolerance) {
+    bool similar(double a, double b, double eps) {
+        // use the same definition of similar as Garfield
+        const double difference_abs = abs(a - b);
+        const double sum_abs = abs(a) + abs(b);
+        return difference_abs <= max(eps * sum_abs, 1E-20);
+    }
+
+    void removeSimilarElements(vector<double>& values, double eps) {
         sort(values.begin(), values.end());
 
-        auto similar = [&absoluteTolerance](double a, double b) {
-            return abs(a - b) <= absoluteTolerance;
+        auto areSimilar = [&eps](double a, double b) {
+            return similar(a, b, eps);
         };
 
-        values.erase(unique(values.begin(), values.end(), similar), values.end());
+        values.erase(unique(values.begin(), values.end(), areSimilar), values.end());
 
         sort(values.begin(), values.end());
     }
