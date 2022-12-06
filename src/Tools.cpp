@@ -82,7 +82,7 @@ namespace tools {
         for (const auto& file: files) {
             command += " " + file;
         }
-        system(command.c_str());
+        const int result = system(command.c_str());
     }
 
 } // namespace tools
