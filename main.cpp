@@ -26,8 +26,6 @@ int main(int argc, char** argv) {
     read->add_option("-g,--gas,-i,--input", gasFilenameInput, "Garfield gas file (.gas) read from")->required();
     read->add_option("-o,--output,--json", gasPropertiesJsonFilename, "Location to save gas properties as json file. If location not specified it will auto generate it")->expected(0, 1);
     read->add_option("--dir,--output-dir,--output-directory", outputDirectory, "Directory to save json file into")->expected(1);
-    vector<double> readGasElectricFieldValues;
-    read->add_option("--electric-field,--field,--efield,-E", readGasElectricFieldValues, "Optional electric field values (V/cm) to read properties for. Warning: if the values are not in the gas file they will be interpolated and the results may not be accurate.");
 
     CLI::App* generate = app.add_subcommand("generate", "Generate a Garfield gas file using command line parameters");
     generate->add_option("-g,--gas,-o,--output", gasFilenameOutput, "Garfield gas file (.gas) to save output into");
@@ -46,12 +44,16 @@ int main(int argc, char** argv) {
     generate->add_flag("--progress,!--no-progress", generateProgress, "Save progress periodically to output file (defaults to true)");
     bool generatePrint = false;
     generate->add_flag("--print", generatePrint, "Print gas properties to stdout after generating gas file (defaults to false)");
-    vector<double> generateGasElectricFieldValues;
-    generate->add_option("--electric-field,--field,--efield,-E", generateGasElectricFieldValues, "Gas electric field values in V/cm");
-    vector<double> generateGasElectricFieldLinearOptions;
-    generate->add_option("--electric-field-linear,--electric-field-lin,--field-lin,--efield-lin,--E-lin", generateGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
-    vector<double> generateGasElectricFieldLogOptions;
-    generate->add_option("--electric-field-log,--electric-field-log,--field-log,--efield-log,--E-log", generateGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
+
+    vector<double> subcommandGasElectricFieldValues;
+    vector<double> subcommandGasElectricFieldLinearOptions;
+    vector<double> subcommandGasElectricFieldLogOptions;
+    for (CLI::App* subcommand: {read, generate}) {
+        subcommand->add_option("--electric-field,--field,--efield,-E,-e", subcommandGasElectricFieldValues, "Gas electric field values in V/cm");
+        subcommand->add_option("--electric-field-linear,--electric-field-lin,--field-lin,--efield-lin,--E-lin,--e-lin", subcommandGasElectricFieldLinearOptions, "Use linearly spaced electric field values (start, end, number)")->expected(3);
+        subcommand->add_option("--electric-field-log,--electric-field-log,--field-log,--efield-log,--E-log,--e-log", subcommandGasElectricFieldLogOptions, "Use logarithmically spaced electric field values (start, end, number)")->expected(3);
+    }
+
     bool generateTestOnly = false;
     generate->add_flag("--test", generateTestOnly, "Do not run generation (used to test input parameters)");
 
@@ -78,17 +80,36 @@ int main(int argc, char** argv) {
     }
 
     const auto subcommand = app.get_subcommands().back();
-
     const string subcommandName = subcommand->get_name();
+
+    // generate electric field values from user options
+    auto& eField = subcommandGasElectricFieldValues;
+    {
+        if (!subcommandGasElectricFieldLinearOptions.empty()) {
+            const vector<double> electricFieldLinear = tools::linspace<double>(subcommandGasElectricFieldLinearOptions[0], subcommandGasElectricFieldLinearOptions[1], static_cast<unsigned int>(subcommandGasElectricFieldLinearOptions[2]));
+            eField.insert(eField.end(), electricFieldLinear.begin(), electricFieldLinear.end());
+        }
+        if (!subcommandGasElectricFieldLogOptions.empty()) {
+            const vector<double> electricFieldLog = tools::logspace<double>(subcommandGasElectricFieldLogOptions[0], subcommandGasElectricFieldLogOptions[1], static_cast<unsigned int>(subcommandGasElectricFieldLogOptions[2]));
+            eField.insert(eField.end(), electricFieldLog.begin(), electricFieldLog.end());
+        }
+        if (!eField.empty()) {
+            tools::removeSimilarElements(eField, tools::getDefaultToleranceForRemoval(eField));
+            sort(eField.begin(), eField.end());
+            cout << "Electric field values (V/cm):";
+            for (const auto& e: eField) {
+                cout << " " << e;
+            }
+            cout << endl;
+        }
+    }
+
     if (subcommandName == "read") {
         cout << "Reading gas properties from file: " << gasFilenameInput << endl;
         Gas gas(gasFilenameInput);
 
         // if user specified electric field values, those values will be used, otherwise the gas file will be read for the electric field values
-        if (!readGasElectricFieldValues.empty()) {
-            sort(readGasElectricFieldValues.begin(), readGasElectricFieldValues.end());
-        }
-        const auto gasProperties = gas.GetGasPropertiesJson(readGasElectricFieldValues);
+        const auto gasProperties = gas.GetGasPropertiesJson(eField);
 
         if (read->get_option("--json")->empty()) {
             // print electric field info
@@ -151,34 +172,16 @@ int main(int argc, char** argv) {
             }
         }
 
-        // validation is handled in constructor
-        Gas gas(gasComponents);
-
-        gas.SetPressure(pressure);
-        gas.SetTemperature(temperature);
-
-        // electric field
-        auto& eField = generateGasElectricFieldValues;
-        if (!generateGasElectricFieldLinearOptions.empty()) {
-            const vector<double> electricFieldLinear = tools::linspace<double>(generateGasElectricFieldLinearOptions[0], generateGasElectricFieldLinearOptions[1], static_cast<unsigned int>(generateGasElectricFieldLinearOptions[2]));
-            eField.insert(eField.end(), electricFieldLinear.begin(), electricFieldLinear.end());
-        }
-        if (!generateGasElectricFieldLogOptions.empty()) {
-            const vector<double> electricFieldLog = tools::logspace<double>(generateGasElectricFieldLogOptions[0], generateGasElectricFieldLogOptions[1], static_cast<unsigned int>(generateGasElectricFieldLogOptions[2]));
-            eField.insert(eField.end(), electricFieldLog.begin(), electricFieldLog.end());
-        }
         if (eField.empty()) {
             cerr << "No electric field values provided (--help)" << endl;
             return 1;
         }
 
-        tools::removeSimilarElements(eField, tools::getDefaultToleranceForRemoval(eField));
+        // validation is handled in constructor
+        Gas gas(gasComponents);
 
-        cout << "Electric field values (V/cm):";
-        for (const auto& e: eField) {
-            cout << " " << e;
-        }
-        cout << endl;
+        gas.SetPressure(pressure);
+        gas.SetTemperature(temperature);
 
         if (gasFilenameOutput.empty()) {
             string name = gas.GetName();
@@ -187,16 +190,16 @@ int main(int argc, char** argv) {
             name += "-nColl" + to_string(numberOfCollisions);
             name += "-E" + (eField.size() == 1 ? tools::numberToCleanNumberString(eField.front()) : tools::numberToCleanNumberString(eField.front()) + "t" + tools::numberToCleanNumberString(eField.back())) + "Vcm";
             name += "-nE" + to_string(eField.size());
-            if (!generateGasElectricFieldLinearOptions.empty()) {
-                unsigned int nLin = generateGasElectricFieldLinearOptions[2];
+            if (!subcommandGasElectricFieldLinearOptions.empty()) {
+                unsigned int nLin = subcommandGasElectricFieldLinearOptions[2];
                 if (nLin == eField.size()) {
                     name += "lin";
                 } else {
                     name += "lin" + to_string(nLin);
                 }
             }
-            if (!generateGasElectricFieldLogOptions.empty()) {
-                unsigned int nLog = generateGasElectricFieldLogOptions[2];
+            if (!subcommandGasElectricFieldLogOptions.empty()) {
+                unsigned int nLog = subcommandGasElectricFieldLogOptions[2];
                 if (nLog == eField.size()) {
                     name += "log";
                 } else {

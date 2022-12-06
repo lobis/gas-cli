@@ -187,8 +187,27 @@ nlohmann::json Gas::GetGasPropertiesJson(const vector<double>& electricFieldMayb
     j["components"]["labels"] = components.first;
     j["components"]["fractions"] = components.second;
 
-    // if electricField is empty, use the table electric field
-    const auto& electricField = electricFieldMaybeEmpty.empty() ? GetTableElectricField() : electricFieldMaybeEmpty;
+    // if optional electric field argument is empty, use the table electric field
+    // const auto& electricField = electricFieldMaybeEmpty.empty() ? GetTableElectricField() : electricFieldMaybeEmpty;
+    auto electricField = GetTableElectricField();
+    if (!electricFieldMaybeEmpty.empty()) {
+        // check if the given electric field fits in the range defined by the table
+        double max = *max_element(electricField.begin(), electricField.end());
+        double min = *min_element(electricField.begin(), electricField.end());
+
+        electricField.clear();
+        for (const auto& e: electricFieldMaybeEmpty) {
+            if (e >= min && e <= max) {
+                electricField.push_back(e);
+            } else {
+                cout << "Warning: electric field value '" << e << "' is outside the range of the gas table (" << min << ", " << max << ")" << endl;
+            }
+        }
+        if (electricField.empty()) {
+            cerr << "Error: no electric field values fit in the range of the gas table (" << min << ", " << max << ")" << endl;
+            exit(1);
+        }
+    }
 
     j["electric_field"] = electricField;
 
