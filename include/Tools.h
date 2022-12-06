@@ -38,8 +38,6 @@ namespace tools {
 
     bool similar(double a, double b, double eps = 1E-3);
 
-    double getDefaultToleranceForRemoval(const std::vector<double>& values);
-
     /// Write contents (string) to file
     void writeToFile(const std::string& filename, const std::string& content);
 

@@ -72,12 +72,6 @@ namespace tools {
         sort(values.begin(), values.end());
     }
 
-    double getDefaultToleranceForRemoval(const vector<double>& values) {
-        double min = *min_element(values.begin(), values.end());
-        double max = *max_element(values.begin(), values.end());
-        return (max - min) / 20000;
-    }
-
     void writeToFile(const string& filename, const string& content) {
         ofstream file(filename);
         file << content;

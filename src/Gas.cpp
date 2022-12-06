@@ -196,13 +196,24 @@ nlohmann::json Gas::GetGasPropertiesJson(const vector<double>& electricFieldMayb
         double min = *min_element(electricField.begin(), electricField.end());
 
         electricField.clear();
-        for (const auto& e: electricFieldMaybeEmpty) {
-            if (e >= min && e <= max) {
+        for (const double e: electricFieldMaybeEmpty) {
+            constexpr double eps = 1E-4;
+            if (e >= min - eps && e <= max + eps) {
                 electricField.push_back(e);
             } else {
                 cout << "Warning: electric field value '" << e << "' is outside the range of the gas table (" << min << ", " << max << ")" << endl;
             }
         }
+        tools::removeSimilarElements(electricField);
+        if (tools::similar(electricField.front(), min)) {
+            electricField.push_back(min);
+            sort(electricField.begin(), electricField.end());
+        }
+        if (tools::similar(electricField.back(), max)) {
+            electricField.push_back(max);
+            sort(electricField.begin(), electricField.end());
+        }
+
         if (electricField.empty()) {
             cerr << "Error: no electric field values fit in the range of the gas table (" << min << ", " << max << ")" << endl;
             exit(1);
