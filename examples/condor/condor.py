@@ -3,7 +3,6 @@ import os
 import subprocess
 import numpy as np
 from pathlib import Path
-import time
 
 gas_cli = "/afs/desy.de/user/l/lobis/.local/bin/gas-cli"
 storage_dir = Path("/afs/desy.de/user/l/lobis/gas-simulations/dag")
@@ -19,8 +18,8 @@ def get_efield_points(n: int):
         for x in sorted(
                 np.concatenate(
                     (
-                            np.logspace(-1, 4, n // 2 + (j + 1) // 2),
-                            np.linspace(0.1, 10000, n // 2 + j // 2),
+                            np.logspace(0, 4, n // 2 + (j + 1) // 2),
+                            np.linspace(1, 10000, n // 2 + j // 2),
                     )
                 )
         ):
@@ -32,69 +31,14 @@ def get_efield_points(n: int):
 
 
 e_field = get_efield_points(200)
+
 runs = [
-    #    ("C4H10 0.25 Ar", e_field, 1),
-    #    ("C4H10 0.5 Ar", e_field, 1),
-    #    ("C4H10 0.75 Ar", e_field, 1),
-    #    ("C4H10 1 Ar", e_field, 1),
-    #    ("C4H10 1.25 Ar", e_field, 1),
-    #    ("C4H10 1.5 Ar", e_field, 1),
-    #    ("C4H10 1.75 Ar", e_field, 1),
-    #    ("C4H10 2 Ar", e_field, 1),
-    #    ("C4H10 2.25 Ar", e_field, 1),
-    #    ("C4H10 2.5 Ar", e_field, 1),
-    #    ("C4H10 2.75 Ar", e_field, 1),
-    #    ("C4H10 3 Ar", e_field, 1),
-    #    ("C4H10 3.25 Ar", e_field, 1),
-    #    ("C4H10 3.5 Ar", e_field, 1),
-    #    ("C4H10 3.75 Ar", e_field, 1),
-    #    ("C4H10 4 Ar", e_field, 1),
-    #    ("C4H10 4.25 Ar", e_field, 1),
-    #    ("C4H10 4.5 Ar", e_field, 1),
-    #    ("C4H10 4.75 Ar", e_field, 1),
-    #    ("C4H10 5 Ar", e_field, 1),
-    #    ("C4H10 5.25 Ar", e_field, 1),
-    #    ("C4H10 5.5 Ar", e_field, 1),
-    #    ("C4H10 5.75 Ar", e_field, 1),
-    #    ("C4H10 6 Ar", e_field, 1),
-    #    ("C4H10 6.25 Ar", e_field, 1),
-    #    ("C4H10 6.5 Ar", e_field, 1),
-    #    ("C4H10 6.75 Ar", e_field, 1),
-    #    ("C4H10 7 Ar", e_field, 1),
-    #    ("C4H10 7.25 Ar", e_field, 1),
-    #    ("C4H10 7.5 Ar", e_field, 1),
-    #    ("C4H10 7.75 Ar", e_field, 1),
-    #    ("C4H10 8 Ar", e_field, 1),
-    #    ("C4H10 8.25 Ar", e_field, 1),
-    #    ("C4H10 8.5 Ar", e_field, 1),
-    #    ("C4H10 8.75 Ar", e_field, 1),
-    #    ("C4H10 9 Ar", e_field, 1),
-    #    ("C4H10 9.25 Ar", e_field, 1),
-    #    ("C4H10 9.5 Ar", e_field, 1),
-    #    ("C4H10 9.75 Ar", e_field, 1),
-    #    ("C4H10 10 Ar", e_field, 1),
-    ("C4H10 10.5 Ar", e_field, 1),
-    ("C4H10 11.0 Ar", e_field, 1),
-    ("C4H10 11.5 Ar", e_field, 1),
-    ("C4H10 12.0 Ar", e_field, 1),
-    ("C4H10 12.5 Ar", e_field, 1),
-    ("C4H10 13.0 Ar", e_field, 1),
-    ("C4H10 13.5 Ar", e_field, 1),
-    ("C4H10 14.0 Ar", e_field, 1),
-    ("C4H10 14.5 Ar", e_field, 1),
-    ("C4H10 15.0 Ar", e_field, 1),
-    ("C4H10 15.5 Ar", e_field, 1),
-    ("C4H10 16.0 Ar", e_field, 1),
-    ("C4H10 16.5 Ar", e_field, 1),
-    ("C4H10 17.0 Ar", e_field, 1),
-    ("C4H10 17.5 Ar", e_field, 1),
-    ("C4H10 18.0 Ar", e_field, 1),
-    ("C4H10 18.5 Ar", e_field, 1),
-    ("C4H10 19.0 Ar", e_field, 1),
-    ("C4H10 19.5 Ar", e_field, 1),
-    ("C4H10 20.0 Ar", e_field, 1),
+    ("C4H10 0.5 Ar", e_field, 1),
 ]
-# randomly shuffle runs
+
+print(runs)
+
+# randomly shuffle runs (optional)
 random.shuffle(runs)
 
 print("Number of runs:", len(runs))
@@ -257,5 +201,3 @@ PARENT {" ".join([f"job_{i}" for i in range(len(sub_files))])} CHILD job_merge
     subprocess.run(["condor_submit_dag", name_dag_file])
 
     print("Finished!")
-
-    time.sleep(10)
